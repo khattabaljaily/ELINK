@@ -37,18 +37,18 @@ ELINK/
 - لاحقاً (اختياري حسب الحمل): Redis للـ caching، Celery للمهام الخلفية (إيميلات تأكيد الطلب، تقارير)
 
 ## ترتيب التنفيذ المقترح (checklist)
-- [ ] إنشاء virtualenv وتثبيت: `django`, `djangorestframework`, `django-filter`, `pillow`, `django-environ`
-- [ ] `django-admin startproject core .`
-- [ ] إنشاء الـ apps: `accounts`, `products`, `cart`, `orders`, `payments`
-- [ ] إعداد `settings.py` (INSTALLED_APPS, DRF, STATIC/MEDIA, templates, .env)
-- [ ] موديلات `products` (Category, Product, ProductImage, Variant)
-- [ ] موديلات `accounts` (لو مطلوب custom user)
-- [ ] موديلات `cart` + منطق السلة
-- [ ] موديلات `orders` (Order, OrderItem) + ربطها بالسلة
-- [ ] موديل `payments.Payment` + `BasePaymentGateway` + تطبيق COD فقط
-- [ ] DRF serializers + viewsets/APIViews للمنتجات، السلة، الطلبات
-- [ ] Templates أساسية (base, product list/detail, cart, checkout) + AJAX JS
-- [ ] git init + أول commit
+- [x] إنشاء virtualenv وتثبيت: `django`, `djangorestframework`, `django-filter`, `pillow`, `django-environ`
+- [x] `django-admin startproject core .`
+- [x] إنشاء الـ apps: `accounts`, `products`, `cart`, `orders`, `payments`
+- [x] إعداد `settings.py` (INSTALLED_APPS, DRF, STATIC/MEDIA, templates, .env)
+- [x] موديلات `products` (Category, Product, ProductImage, Variant)
+- [x] موديلات `accounts` (custom user model مع phone/address/city)
+- [x] موديلات `cart` + منطق السلة (session أو user، merge عند تسجيل الدخول)
+- [x] موديلات `orders` (Order, OrderItem) + ربطها بالسلة (checkout flow كامل)
+- [x] موديل `payments.Payment` + `BasePaymentGateway` + تطبيق COD فقط
+- [x] DRF serializers + viewsets/APIViews للمنتجات، السلة، الطلبات
+- [x] Templates أساسية (base, product list/detail, cart, checkout) + AJAX JS — بتصميم موحد (static/css/style.css) بألوان الشعار
+- [x] git init + أول commit
 - [ ] لاحقاً (بعد جهوزية الحساب البنكي): تفعيل تكامل بوابة دفع حقيقية داخل `payments` بدون تعديل بقية النظام
 
 ## ما لا يجب فعله الآن
