@@ -1,0 +1,183 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block page_title %}{% if product %}Edit product{% else %}Add product{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>{% if product %}Edit "{{ product.name }}"{% else %}Add product{% endif %}</h1>
+    </div>
+    <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline">&larr; Back to products</a>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="dash-card">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="{{ form.name.id_for_label }}">Product name</label>
+          {{ form.name }}
+          {% for error in form.name.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.category.id_for_label }}">Category</label>
+          {{ form.category }}
+          {% for error in form.category.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.price.id_for_label }}">Price (QAR)</label>
+          {{ form.price }}
+          {% for error in form.price.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group full">
+          <label for="{{ form.description.id_for_label }}">Description</label>
+          {{ form.description }}
+        </div>
+        <div class="form-group checkbox-row">
+          {{ form.is_active }}
+          <label for="{{ form.is_active.id_for_label }}" style="margin:0">Visible in store</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="formset-block">
+      <div class="formset-head">
+        <div>
+          <h3>Images</h3>
+          <p>Drag a photo in, or click a tile to browse. The first image is used as the product's cover.</p>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" data-add-row="images">+ Add image</button>
+      </div>
+      {{ image_formset.management_form }}
+      <div class="image-formset" data-formset="images">
+        {% for image_form in image_formset %}
+          <div class="image-row" data-formset-row>
+            {% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}
+            <label class="image-dropzone{% if image_form.instance.pk and image_form.instance.image %} has-image{% endif %}"
+              {% if image_form.instance.pk and image_form.instance.image %}style="background-image:url('{{ image_form.instance.image.url }}')"{% endif %}>
+              {{ image_form.image }}
+              <div class="image-dropzone__overlay">
+                <svg class="image-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg>
+                <span>Click or drop to upload</span>
+              </div>
+            </label>
+            <span class="image-dropzone__filename"></span>
+            <div class="image-row__fields">
+              <div class="form-group">
+                <label>Alt text</label>
+                {{ image_form.alt_text }}
+              </div>
+              <div class="form-group checkbox-row">
+                {{ image_form.is_primary }}
+                <label style="margin:0">Primary image</label>
+              </div>
+              {% if image_form.instance.pk %}
+                <label class="delete-row-field">{{ image_form.DELETE }} Remove this image</label>
+              {% else %}
+                <button type="button" class="link-remove-row" data-remove-row>Remove row</button>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <template id="images-empty-form">
+        <div class="image-row" data-formset-row>
+          <label class="image-dropzone">
+            {{ image_formset.empty_form.image }}
+            <div class="image-dropzone__overlay">
+              <svg class="image-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg>
+              <span>Click or drop to upload</span>
+            </div>
+          </label>
+          <span class="image-dropzone__filename"></span>
+          <div class="image-row__fields">
+            <div class="form-group">
+              <label>Alt text</label>
+              {{ image_formset.empty_form.alt_text }}
+            </div>
+            <div class="form-group checkbox-row">
+              {{ image_formset.empty_form.is_primary }}
+              <label style="margin:0">Primary image</label>
+            </div>
+            <button type="button" class="link-remove-row" data-remove-row>Remove row</button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <div class="formset-block">
+      <div class="formset-head">
+        <div>
+          <h3>Variants</h3>
+          <p>Every size/color combination needs its own SKU and stock count.</p>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" data-add-row="variants">+ Add variant</button>
+      </div>
+      {{ variant_formset.management_form }}
+      <div data-formset="variants">
+        {% for variant_form in variant_formset %}
+          <div class="formset-row" data-formset-row>
+            {% for hidden in variant_form.hidden_fields %}{{ hidden }}{% endfor %}
+            <div class="form-group">
+              <label>Size</label>
+              {{ variant_form.size }}
+            </div>
+            <div class="form-group">
+              <label>Color</label>
+              {{ variant_form.color }}
+            </div>
+            <div class="form-group">
+              <label>SKU</label>
+              {{ variant_form.sku }}
+              {% for error in variant_form.sku.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              {{ variant_form.stock }}
+            </div>
+            <div class="form-group">
+              <label>Price override</label>
+              {{ variant_form.price_override }}
+            </div>
+            {% if variant_form.instance.pk %}
+              <label class="delete-row-field">{{ variant_form.DELETE }} Remove</label>
+            {% else %}
+              <button type="button" class="link-remove-row" data-remove-row>Remove row</button>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <template id="variants-empty-form">
+        <div class="formset-row" data-formset-row>
+          <div class="form-group">
+            <label>Size</label>
+            {{ variant_formset.empty_form.size }}
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            {{ variant_formset.empty_form.color }}
+          </div>
+          <div class="form-group">
+            <label>SKU</label>
+            {{ variant_formset.empty_form.sku }}
+          </div>
+          <div class="form-group">
+            <label>Stock</label>
+            {{ variant_formset.empty_form.stock }}
+          </div>
+          <div class="form-group">
+            <label>Price override</label>
+            {{ variant_formset.empty_form.price_override }}
+          </div>
+          <button type="button" class="link-remove-row" data-remove-row>Remove row</button>
+        </div>
+      </template>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save product</button>
+      <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

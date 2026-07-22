@@ -1,0 +1,78 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Orders{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Orders</h1>
+      <p>{{ orders|length }} order{{ orders|length|pluralize }}.</p>
+    </div>
+  </div>
+
+  <form method="get" class="filter-bar">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {% if selected_status %}<button type="submit" class="btn btn-outline btn-sm">Filter</button>{% endif %}
+  </form>
+
+  {% if orders %}
+    <div class="dash-table-wrap">
+      <table class="dash-table" id="orders-table">
+        <thead>
+          <tr><th>Order</th><th>Customer</th><th>Phone</th><th>Status</th><th>Total</th><th>Date</th><th class="no-sort"></th></tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+            <tr>
+              <td data-label="Order">#{{ order.id }}</td>
+              <td data-label="Customer">{{ order.full_name }}</td>
+              <td data-label="Phone">{{ order.phone }}</td>
+              <td data-label="Status"><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+              <td data-label="Total">QAR {{ order.total }}</td>
+              <td data-label="Date">{{ order.created_at|date:"d M Y" }}</td>
+              <td class="card-actions">
+                <div class="table-actions">
+                  <button type="button" class="btn btn-outline btn-sm"
+                    data-modal-url="{% url 'dashboard:order_detail' order.pk %}" data-modal-title="Order #{{ order.id }}">Edit</button>
+                  <button type="button" class="btn btn-danger btn-sm"
+                    data-modal-confirm
+                    data-modal-url="{% url 'dashboard:order_delete' order.pk %}"
+                    data-modal-title="Delete order?"
+                    data-modal-message="Delete order #{{ order.id }} for &quot;{{ order.full_name }}&quot;? This can&#39;t be undone."
+                    data-modal-confirm-label="Yes, delete">Delete</button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="dash-empty"><p>No orders found.</p></div>
+  {% endif %}
+{% endblock %}
+
+{% block vendor_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+  $(function () {
+    $('#orders-table').DataTable({
+      lengthMenu: [20, 50, 100],
+      pageLength: 20,
+      order: [[5, 'desc']],
+      columnDefs: [{ targets: 'no-sort', orderable: false }],
+      language: { searchPlaceholder: 'Search orders…', search: '' },
+    });
+  });
+</script>
+{% endblock %}

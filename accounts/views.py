@@ -14,6 +14,11 @@ class AccountLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
 
+    def get_default_redirect_url(self):
+        if self.request.user.is_staff:
+            return reverse_lazy('dashboard:home')
+        return super().get_default_redirect_url()
+
 
 class AccountLogoutView(LogoutView):
     next_page = 'products:list'

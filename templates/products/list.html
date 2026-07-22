@@ -6,12 +6,22 @@
 {% block content %}
   {% if not category and not search_query %}
     <section class="hero">
-      <div>
+      <div class="hero__content">
+        <span class="hero__eyebrow">New arrivals every week</span>
         <h1 class="hero__title">Everything you need, one link away.</h1>
         <p class="hero__subtitle">Browse our full catalog and check out securely — pay in cash on delivery, no card required.</p>
-        <a href="#catalog" class="btn btn-accent">Start shopping</a>
+        <div class="hero__actions">
+          <a href="#catalog" class="btn btn-accent">Start shopping</a>
+        </div>
+        <div class="hero__badges">
+          <span class="hero__badge"><span class="hero__badge-icon">&check;</span> Cash on delivery</span>
+          <span class="hero__badge"><span class="hero__badge-icon">&check;</span> Secure checkout</span>
+          <span class="hero__badge"><span class="hero__badge-icon">&check;</span> Fast local delivery</span>
+        </div>
       </div>
-      <img src="{% static 'img/logo/765824.png' %}" alt="" width="140" style="opacity:.9">
+      <div class="hero__art">
+        <img src="{% static 'img/logo/765824.png' %}" alt="">
+      </div>
     </section>
   {% endif %}
 
@@ -20,31 +30,44 @@
       <h2 class="section-title" style="margin:0">
         {% if category %}{{ category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}
       </h2>
-      <div class="category-chips">
-        <a href="{% url 'products:list' %}" class="chip {% if not category %}is-active{% endif %}">All</a>
-        {% for c in categories %}
-          <a href="{% url 'products:list_by_category' c.slug %}" class="chip {% if category.slug == c.slug %}is-active{% endif %}">{{ c.name }}</a>
-        {% endfor %}
+      <div class="category-filter">
+        <label for="category-select" class="visually-hidden">Filter by category</label>
+        <select id="category-select" onchange="if(this.value) window.location = this.value;">
+          <option value="{% url 'products:list' %}" {% if not category %}selected{% endif %}>All categories</option>
+          {% for c in categories %}
+            <option value="{% url 'products:list_by_category' c.slug %}" {% if category.slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
       </div>
     </div>
 
     {% if products %}
       <div class="product-grid">
         {% for product in products %}
-          <a href="{{ product.get_absolute_url }}" class="product-card">
-            <div class="product-card__image">
-              {% if product.main_image %}
-                <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}">
-              {% else %}
-                <span class="product-card__placeholder">E LINK</span>
-              {% endif %}
+          {% with variant=product.default_variant %}
+            <div class="product-card" style="animation-delay: {{ forloop.counter0|add:0 }}0ms">
+              <a href="{{ product.get_absolute_url }}" class="product-card__image">
+                {% if product.main_image %}
+                  <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                  <span class="product-card__placeholder">E LINK</span>
+                {% endif %}
+                <span class="product-card__badge">{{ product.category.name }}</span>
+                {% if not variant %}<span class="product-card__ribbon">Out of stock</span>{% endif %}
+              </a>
+              <div class="product-card__body">
+                <a href="{{ product.get_absolute_url }}" class="product-card__link">
+                  <span class="product-card__name">{{ product.name }}</span>
+                </a>
+                <span class="product-card__price">QAR {{ product.price }}</span>
+                <button type="button" class="btn btn-primary product-card__add" data-quick-add
+                  data-variant-id="{{ variant.id|default:'' }}" {% if not variant %}disabled{% endif %}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  {% if variant %}Add to cart{% else %}Out of stock{% endif %}
+                </button>
+              </div>
             </div>
-            <div class="product-card__body">
-              <span class="product-card__category">{{ product.category.name }}</span>
-              <span class="product-card__name">{{ product.name }}</span>
-              <span class="product-card__price">QAR {{ product.price }}</span>
-            </div>
-          </a>
+          {% endwith %}
         {% endfor %}
       </div>
     {% else %}

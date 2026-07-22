@@ -25,7 +25,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField(blank=True)
@@ -55,6 +55,11 @@ class Product(models.Model):
     @property
     def total_stock(self):
         return sum(v.stock for v in self.variants.all())
+
+    @property
+    def default_variant(self):
+        in_stock = [v for v in self.variants.all() if v.stock > 0]
+        return in_stock[0] if in_stock else None
 
 
 class ProductImage(models.Model):

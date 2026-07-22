@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}E LINK{% endblock %}</title>
   <link rel="icon" href="{% static 'img/logo/765824.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
@@ -62,13 +65,39 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <span class="brand__name">E LINK</span>
+    <div class="container site-footer__top">
+      <div class="site-footer__brand">
+        <a href="{% url 'products:list' %}" class="brand">
+          <img src="{% static 'img/logo/765824.png' %}" alt="E LINK" class="brand__logo">
+          <span class="brand__name">E LINK</span>
+        </a>
+        <p class="site-footer__tagline">Everything you need, one link away — shop online and pay cash on delivery.</p>
+      </div>
+
+      <div>
+        <div class="site-footer__heading">Shop</div>
+        <nav class="footer-links">
+          <a href="{% url 'products:list' %}">All products</a>
+          <a href="{% url 'cart:detail' %}">Cart</a>
+        </nav>
+      </div>
+
+      <div>
+        <div class="site-footer__heading">Account</div>
+        <nav class="footer-links">
+          {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}">My orders</a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}">Log in</a>
+            <a href="{% url 'accounts:register' %}">Sign up</a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+
+    <div class="container site-footer__bottom">
       <span>&copy; {% now "Y" %} E LINK. All rights reserved.</span>
-      <nav class="footer-links">
-        <a href="{% url 'products:list' %}">Shop</a>
-        <a href="{% url 'cart:detail' %}">Cart</a>
-      </nav>
+      <span>Cash on Delivery available</span>
     </div>
   </footer>
 

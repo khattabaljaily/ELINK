@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}{% if object %}Edit category{% else %}Add category{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <h1>{% if object %}Edit "{{ object.name }}"{% else %}Add category{% endif %}</h1>
+    <a href="{% url 'dashboard:category_list' %}" class="btn btn-outline">&larr; Back to categories</a>
+  </div>
+
+  <div class="dash-card" style="max-width:520px;">
+    {% include "dashboard/categories/_form_fields.html" %}
+  </div>
+{% endblock %}

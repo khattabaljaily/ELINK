@@ -2,18 +2,17 @@
 Django settings for core project.
 """
 
+import json
 from pathlib import Path
-
-import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(BASE_DIR / '.env')
+with open(BASE_DIR / 'secrets.json') as secrets_file:
+    secrets = json.load(secrets_file)
 
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+SECRET_KEY = secrets['SECRET_KEY']
+DEBUG = secrets['DEBUG']
+ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
 
 
 # Application definition
@@ -36,6 +35,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'payments',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -73,8 +73,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
+    'default': secrets['DATABASE']
 }
+
+if DATABASES['default']['ENGINE'].endswith('sqlite3'):
+    DATABASES['default']['NAME'] = BASE_DIR / DATABASES['default']['NAME']
 
 
 # Custom user model

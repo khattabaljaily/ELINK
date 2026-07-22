@@ -1,0 +1,63 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <h1>Order #{{ order.id }}</h1>
+    <a href="{% url 'dashboard:order_list' %}" class="btn btn-outline">&larr; Back to orders</a>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-card">
+      <div class="dash-card__title">Items</div>
+      <div class="dash-table-wrap" style="border:none;padding:0;">
+        <table class="dash-table">
+          <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Subtotal</th></tr></thead>
+          <tbody>
+            {% for item in order.items.all %}
+              <tr>
+                <td class="wrap">{{ item.product_name }}{% if item.variant_label %} <span class="text-muted">({{ item.variant_label }})</span>{% endif %}</td>
+                <td>{{ item.quantity }}</td>
+                <td>QAR {{ item.unit_price }}</td>
+                <td>QAR {{ item.subtotal }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align:right;margin-top:16px;font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--color-navy)">
+        Total: QAR {{ order.total }}
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="dash-card">
+        <div class="dash-card__title">Status</div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.status }}
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Update status</button>
+        </form>
+
+        {% if order.payment %}
+          <p class="text-muted" style="margin-top:16px;font-size:0.85rem;">
+            Payment: <strong>{{ order.payment.gateway|upper }}</strong> &middot; {{ order.payment.get_status_display }}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card__title">Customer</div>
+        <p class="text-muted" style="font-size:0.88rem;line-height:1.7">
+          {{ order.full_name }}<br>
+          {{ order.email }}<br>
+          {{ order.phone }}<br>
+          {{ order.address }}, {{ order.city }}
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

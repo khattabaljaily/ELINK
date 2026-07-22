@@ -1,0 +1,52 @@
+<form method="post" action="{{ request.path }}">
+  {% csrf_token %}
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      {% for error in form.username.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.email.id_for_label }}">Email</label>
+      {{ form.email }}
+      {% for error in form.email.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.first_name.id_for_label }}">First name</label>
+      {{ form.first_name }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.last_name.id_for_label }}">Last name</label>
+      {{ form.last_name }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.role.id_for_label }}">Role</label>
+      {{ form.role }}
+      <span class="helptext">Managers can manage employees and view reports.</span>
+    </div>
+    {% if form.is_active %}
+      <div class="form-group checkbox-row">
+        {{ form.is_active }}
+        <label for="{{ form.is_active.id_for_label }}" style="margin:0">Active</label>
+      </div>
+    {% endif %}
+
+    {% if form.password1 %}
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">Password</label>
+        {{ form.password1 }}
+        {% for error in form.password1.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">Confirm password</label>
+        {{ form.password2 }}
+        {% for error in form.password2.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Save employee</button>
+    <a href="{% url 'dashboard:employee_list' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>

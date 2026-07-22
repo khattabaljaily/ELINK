@@ -1,0 +1,74 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Employees{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Employees</h1>
+      <p>{{ employees|length }} staff account{{ employees|length|pluralize }}.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-modal-url="{% url 'dashboard:employee_create' %}" data-modal-title="Add employee">+ Add employee</button>
+  </div>
+
+  <div class="dash-table-wrap">
+    <table class="dash-table" id="employees-table">
+      <thead>
+        <tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th class="no-sort"></th></tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+          <tr>
+            <td data-label="Name">{{ employee.get_full_name|default:"—" }}</td>
+            <td data-label="Username">{{ employee.username }}</td>
+            <td data-label="Email">{{ employee.email }}</td>
+            <td data-label="Role"><span class="badge badge-role-{{ employee.role }}">{{ employee.get_role_display }}</span></td>
+            <td data-label="Status">
+              {% if employee.is_active %}
+                <span class="badge badge-active">Active</span>
+              {% else %}
+                <span class="badge badge-inactive">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="card-actions">
+              <div class="table-actions">
+                <button type="button" class="btn btn-outline btn-sm"
+                  data-modal-url="{% url 'dashboard:employee_edit' employee.pk %}" data-modal-title="Edit employee">Edit</button>
+                {% if employee != user %}
+                  <button type="button" class="btn btn-danger btn-sm"
+                    data-modal-confirm
+                    data-modal-url="{% url 'dashboard:employee_toggle_active' employee.pk %}"
+                    data-modal-title="{% if employee.is_active %}Deactivate employee?{% else %}Activate employee?{% endif %}"
+                    data-modal-message="{% if employee.is_active %}Deactivate &quot;{{ employee.username }}&quot;? They won&#39;t be able to log in.{% else %}Reactivate &quot;{{ employee.username }}&quot;?{% endif %}"
+                    data-modal-confirm-label="{% if employee.is_active %}Yes, deactivate{% else %}Yes, activate{% endif %}">
+                    {% if employee.is_active %}Deactivate{% else %}Activate{% endif %}
+                  </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block vendor_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+  $(function () {
+    $('#employees-table').DataTable({
+      lengthMenu: [20, 50, 100],
+      pageLength: 20,
+      order: [],
+      columnDefs: [{ targets: 'no-sort', orderable: false }],
+      language: { searchPlaceholder: 'Search employees…', search: '' },
+    });
+  });
+</script>
+{% endblock %}

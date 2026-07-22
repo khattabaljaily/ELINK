@@ -62,4 +62,22 @@
   window.CSRF_TOKEN = window.CSRF_TOKEN || (typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '');
 
   window.ELinkCart = { addItem, updateItem, removeItem, showToast };
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('[data-quick-add]');
+    if (!btn || btn.disabled) return;
+    e.preventDefault();
+
+    const variantId = btn.dataset.variantId;
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    addItem(variantId, 1)
+      .catch(() => {})
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      });
+  });
 })();

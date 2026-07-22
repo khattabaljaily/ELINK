@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}{% if object %}Edit employee{% else %}Add employee{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <h1>{% if object %}Edit "{{ object.username }}"{% else %}Add employee{% endif %}</h1>
+    <a href="{% url 'dashboard:employee_list' %}" class="btn btn-outline">&larr; Back to employees</a>
+  </div>
+
+  <div class="dash-card" style="max-width:560px;">
+    {% include "dashboard/employees/_form_fields.html" %}
+  </div>
+{% endblock %}

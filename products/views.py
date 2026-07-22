@@ -5,7 +5,7 @@ from .models import Category, Product
 
 
 def product_list(request, slug=None):
-    products = Product.objects.filter(is_active=True).select_related('category').prefetch_related('images')
+    products = Product.objects.filter(is_active=True).select_related('category').prefetch_related('images', 'variants')
     category = None
     if slug:
         category = get_object_or_404(Category, slug=slug)

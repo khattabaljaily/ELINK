@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Access denied · E LINK{% endblock %}
+
+{% block content %}
+  <div class="confirmation-panel">
+    <div class="confirmation-icon" style="background:var(--color-danger);box-shadow:none;">&times;</div>
+    <h1>Access denied</h1>
+    <p class="text-muted">You don't have permission to view this page.</p>
+    <a href="{% url 'products:list' %}" class="btn btn-primary">Back to store</a>
+  </div>
+{% endblock %}

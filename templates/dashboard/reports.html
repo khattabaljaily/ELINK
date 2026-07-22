@@ -1,0 +1,96 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Reports</h1>
+      <p>Revenue and sales breakdown for the selected period.</p>
+    </div>
+    <div class="pill-filters">
+      {% for range in allowed_ranges %}
+        <a href="?days={{ range }}" class="{% if days == range %}is-active{% endif %}">Last {{ range }} days</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--accent">
+      <div class="kpi-card__label">Revenue</div>
+      <div class="kpi-card__value">QAR {{ revenue|floatformat:2 }}</div>
+      <div class="kpi-card__meta">Last {{ days }} days, cancelled excluded</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Orders</div>
+      <div class="kpi-card__value">{{ orders_count }}</div>
+      <div class="kpi-card__meta">Completed and in-progress</div>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card__title">Revenue over time</div>
+    <div class="bar-chart">
+      {% for point in chart %}
+        <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|floatformat:2 }}">
+          <div class="bar-chart__bar" style="height:{{ point.height }}%"></div>
+          <span class="bar-chart__label">{{ point.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="dash-grid--reports" style="display:grid;gap:20px;margin-top:20px;">
+    <div class="dash-card">
+      <div class="dash-card__title">Orders by status</div>
+      <div class="dash-table-wrap" style="border:none;padding:0;">
+        <table class="dash-table">
+          <tbody>
+            {% for row in by_status %}
+              <tr>
+                <td><span class="badge badge-{{ row.status }}">{{ row.status|capfirst }}</span></td>
+                <td>{{ row.count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card__title">Top products</div>
+      <div class="dash-table-wrap" style="border:none;padding:0;">
+        <table class="dash-table">
+          <thead><tr><th>Product</th><th>Qty sold</th><th>Revenue</th></tr></thead>
+          <tbody>
+            {% for p in top_products %}
+              <tr>
+                <td class="wrap">{{ p.product_name }}</td>
+                <td>{{ p.qty }}</td>
+                <td>QAR {{ p.revenue|floatformat:2 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card__title">Top categories</div>
+      <div class="dash-table-wrap" style="border:none;padding:0;">
+        <table class="dash-table">
+          <thead><tr><th>Category</th><th>Qty sold</th><th>Revenue</th></tr></thead>
+          <tbody>
+            {% for c in top_categories %}
+              <tr>
+                <td class="wrap">{{ c.variant__product__category__name|default:"—" }}</td>
+                <td>{{ c.qty }}</td>
+                <td>QAR {{ c.revenue|floatformat:2 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

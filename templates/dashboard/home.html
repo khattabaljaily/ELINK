@@ -1,0 +1,127 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
+      <p>Here's what's happening with your store today.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--accent">
+      <div class="kpi-card__label">Total revenue</div>
+      <div class="kpi-card__value">QAR {{ revenue|floatformat:2 }}</div>
+      <div class="kpi-card__meta">Across {{ orders_count }} order{{ orders_count|pluralize }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Pending orders</div>
+      <div class="kpi-card__value">{{ pending_orders }}</div>
+      <div class="kpi-card__meta">{{ processing_orders }} in processing</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Products</div>
+      <div class="kpi-card__value">{{ products_count }}</div>
+      <div class="kpi-card__meta">{{ low_stock|length }} low on stock</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Customers</div>
+      <div class="kpi-card__value">{{ customers_count }}</div>
+      <div class="kpi-card__meta">Registered accounts</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-card">
+      <div class="dash-card__head">
+        <div>
+          <div class="dash-card__title">Revenue, last 14 days</div>
+          <span class="text-muted" style="font-size:0.8rem">Cancelled orders excluded</span>
+        </div>
+      </div>
+      <div class="bar-chart">
+        {% for point in chart %}
+          <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|floatformat:2 }}">
+            <div class="bar-chart__bar" style="height:{{ point.height }}%"></div>
+            <span class="bar-chart__label">{{ point.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card__title">Top products</div>
+      {% if top_products %}
+        <div class="dash-table-wrap" style="border:none;padding:0;">
+          <table class="dash-table">
+            <tbody>
+              {% for p in top_products %}
+                <tr>
+                  <td class="wrap">{{ p.product_name }}</td>
+                  <td>{{ p.qty }} sold</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.85rem">No sales yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="dash-grid" style="margin-top:20px;">
+    <div class="dash-card">
+      <div class="dash-card__head">
+        <div class="dash-card__title">Recent orders</div>
+        <a href="{% url 'dashboard:order_list' %}" class="btn btn-outline btn-sm">View all</a>
+      </div>
+      {% if recent_orders %}
+        <div class="dash-table-wrap" style="border:none;padding:0;">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+                <tr onclick="window.location='{% url 'dashboard:order_detail' order.pk %}'" style="cursor:pointer">
+                  <td>#{{ order.id }}</td>
+                  <td>{{ order.full_name }}</td>
+                  <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                  <td>QAR {{ order.total }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.85rem">No orders yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card__title">Low stock</div>
+      {% if low_stock %}
+        <div class="dash-table-wrap" style="border:none;padding:0;">
+          <table class="dash-table">
+            <tbody>
+              {% for variant in low_stock %}
+                <tr>
+                  <td class="wrap">
+                    {{ variant.product.name }}
+                    {% if variant.size or variant.color %}<br><span class="text-muted" style="font-size:0.78rem">{{ variant.size }} {{ variant.color }}</span>{% endif %}
+                  </td>
+                  <td>{{ variant.stock }} left</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.85rem">All variants are well stocked.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
