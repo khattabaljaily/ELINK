@@ -6,6 +6,8 @@ from django.utils.text import slugify
 from orders.models import Order
 from products.models import Category, Product, ProductImage, Variant
 
+from .models import SiteSettings
+
 User = get_user_model()
 
 
@@ -109,3 +111,10 @@ class EmployeeUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'role', 'is_active')
+
+
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = ('maintenance_mode', 'coming_soon_message')
+        widgets = {'coming_soon_message': forms.Textarea(attrs={'rows': 4})}

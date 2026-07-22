@@ -1,0 +1,36 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Site settings</h1>
+      <p>Control site-wide behavior for the storefront.</p>
+    </div>
+  </div>
+
+  <div class="dash-card" style="max-width:640px;">
+    <div class="dash-card__title">Coming soon mode</div>
+    <p class="text-muted" style="font-size:0.85rem;margin-top:-8px;margin-bottom:16px;">
+      When enabled, visitors see a coming soon page instead of the storefront. Staff can still log in and use the dashboard.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>
+          {{ form.maintenance_mode }}
+          Enable coming soon mode
+        </label>
+      </div>
+      <div class="form-group full">
+        <label for="{{ form.coming_soon_message.id_for_label }}">Message shown to visitors</label>
+        {{ form.coming_soon_message }}
+        {% if form.coming_soon_message.errors %}
+          <p class="form-errors">{{ form.coming_soon_message.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+  </div>
+{% endblock %}

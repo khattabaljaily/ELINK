@@ -27,4 +27,6 @@ urlpatterns = [
     path('employees/<int:pk>/toggle-active/', views.EmployeeToggleActiveView.as_view(), name='employee_toggle_active'),
 
     path('reports/', views.ReportsView.as_view(), name='reports'),
+
+    path('settings/', views.SiteSettingsView.as_view(), name='settings'),
 ]

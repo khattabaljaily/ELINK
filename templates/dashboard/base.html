@@ -50,6 +50,11 @@
           <a href="{% url 'dashboard:reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128202;</span> Reports
           </a>
+
+          <div class="dash-nav__heading">Site</div>
+          <a href="{% url 'dashboard:settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#9881;</span> Settings
+          </a>
         {% endif %}
       </nav>
 
