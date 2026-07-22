@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="product-detail">
+      <div class="product-detail__gallery">
+        {% with image=product.main_image %}
+          {% if image %}
+            <img src="{{ image.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <div class="product-detail__gallery-placeholder">E LINK</div>
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <div class="product-detail__info">
+        <span class="product-detail__category">{{ product.category.name }}</span>
+        <h1>{{ product.name }}</h1>
+        <div class="product-detail__price" id="detail-price">QAR {{ product.price }}</div>
+        <p>{{ product.description }}</p>
+
+        {% if product.variants.all %}
+          <div class="variant-select">
+            <label for="variant-select">Select an option</label>
+            <select id="variant-select">
+              {% for variant in product.variants.all %}
+                <option value="{{ variant.id }}" data-price="{{ variant.price }}" data-stock="{{ variant.stock }}"
+                  {% if not variant.in_stock %}disabled{% endif %}>
+                  {% if variant.size or variant.color %}{{ variant.size }} {{ variant.color }}{% else %}{{ variant.sku }}{% endif %}
+                  {% if not variant.in_stock %} — Out of stock{% endif %}
+                </option>
+              {% endfor %}
+            </select>
+            <p class="stock-note" id="stock-note"></p>
+          </div>
+
+          <div class="detail-actions">
+            <input type="number" class="qty-input" id="qty-input" value="1" min="1">
+            <button type="button" class="btn btn-primary" id="add-to-cart-btn" data-add-to-cart>Add to cart</button>
+          </div>
+        {% else %}
+          <p class="text-muted">This product is currently unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const select = document.getElementById('variant-select');
+    const stockNote = document.getElementById('stock-note');
+    const btn = document.getElementById('add-to-cart-btn');
+
+    function updateStockNote() {
+      if (!select) return;
+      const opt = select.options[select.selectedIndex];
+      const stock = parseInt(opt.dataset.stock, 10);
+      if (stock > 0) {
+        stockNote.textContent = stock <= 5 ? `Only ${stock} left in stock` : 'In stock';
+        stockNote.className = 'stock-note in-stock';
+        btn.disabled = false;
+      } else {
+        stockNote.textContent = 'Out of stock';
+        stockNote.className = 'stock-note out-of-stock';
+        btn.disabled = true;
+      }
+    }
+
+    if (select) {
+      select.addEventListener('change', updateStockNote);
+      updateStockNote();
+    }
+
+    if (btn) {
+      btn.addEventListener('click', function () {
+        const variantId = select ? select.value : null;
+        const qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+        window.ELinkCart.addItem(variantId, qty);
+      });
+    }
+  });
+</script>
+{% endblock %}

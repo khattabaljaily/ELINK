@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up · E LINK{% endblock %}
+
+{% block content %}
+  <div class="auth-card">
+    <h1 class="section-title" style="font-size:1.4rem">Create your account</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+          {% for error in field.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+    </form>
+    <p class="auth-card__footer">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+  </div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}E LINK{% endblock %}</title>
+  <link rel="icon" href="{% static 'img/logo/765824.png' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container site-header__bar">
+      <a href="{% url 'products:list' %}" class="brand">
+        <img src="{% static 'img/logo/765824.png' %}" alt="E LINK" class="brand__logo">
+        <span class="brand__name">E LINK</span>
+      </a>
+
+      <nav class="main-nav">
+        <a href="{% url 'products:list' %}" class="{% if request.resolver_match.url_name == 'list' %}is-active{% endif %}">Shop</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'accounts:profile' %}">My Orders</a>
+        {% endif %}
+      </nav>
+
+      <div class="header-search">
+        <form action="{% url 'products:list' %}" method="get">
+          <input type="search" name="q" placeholder="Search products…" value="{{ request.GET.q }}" aria-label="Search products">
+        </form>
+      </div>
+
+      <div class="header-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'accounts:profile' %}" class="text-muted">Hi, {{ user.first_name|default:user.username }}</a>
+          <form action="{% url 'accounts:logout' %}" method="post" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-sm">Log out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-sm">Log in</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Sign up</a>
+        {% endif %}
+        <a href="{% url 'cart:detail' %}" class="cart-link">
+          Cart
+          <span class="cart-badge" id="cart-count">{{ cart_total_items|default:0 }}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="brand__name">E LINK</span>
+      <span>&copy; {% now "Y" %} E LINK. All rights reserved.</span>
+      <nav class="footer-links">
+        <a href="{% url 'products:list' %}">Shop</a>
+        <a href="{% url 'cart:detail' %}">Cart</a>
+      </nav>
+    </div>
+  </footer>
+
+  <div id="toast"></div>
+  <script>
+    const CSRF_TOKEN = '{{ csrf_token }}';
+  </script>
+  <script src="{% static 'js/cart.js' %}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

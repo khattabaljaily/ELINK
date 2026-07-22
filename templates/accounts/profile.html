@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <h1 class="section-title">My Orders</h1>
+
+    {% if orders %}
+      <div class="order-list-card">
+        {% for order in orders %}
+          <div class="order-line">
+            <span>
+              <a href="{% url 'orders:detail' order.id %}"><strong>#{{ order.id }}</strong></a>
+              &middot; {{ order.created_at|date:"M d, Y" }}
+              &middot; <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+            </span>
+            <span>QAR {{ order.total }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>You haven't placed any orders yet.</p>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">Start shopping</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if category %}{{ category.name }}{% else %}Shop{% endif %} · E LINK{% endblock %}
+
+{% block content %}
+  {% if not category and not search_query %}
+    <section class="hero">
+      <div>
+        <h1 class="hero__title">Everything you need, one link away.</h1>
+        <p class="hero__subtitle">Browse our full catalog and check out securely — pay in cash on delivery, no card required.</p>
+        <a href="#catalog" class="btn btn-accent">Start shopping</a>
+      </div>
+      <img src="{% static 'img/logo/765824.png' %}" alt="" width="140" style="opacity:.9">
+    </section>
+  {% endif %}
+
+  <div class="page" id="catalog">
+    <div class="filters-bar">
+      <h2 class="section-title" style="margin:0">
+        {% if category %}{{ category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}
+      </h2>
+      <div class="category-chips">
+        <a href="{% url 'products:list' %}" class="chip {% if not category %}is-active{% endif %}">All</a>
+        {% for c in categories %}
+          <a href="{% url 'products:list_by_category' c.slug %}" class="chip {% if category.slug == c.slug %}is-active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if products %}
+      <div class="product-grid">
+        {% for product in products %}
+          <a href="{{ product.get_absolute_url }}" class="product-card">
+            <div class="product-card__image">
+              {% if product.main_image %}
+                <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}">
+              {% else %}
+                <span class="product-card__placeholder">E LINK</span>
+              {% endif %}
+            </div>
+            <div class="product-card__body">
+              <span class="product-card__category">{{ product.category.name }}</span>
+              <span class="product-card__name">{{ product.name }}</span>
+              <span class="product-card__price">QAR {{ product.price }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>No products found{% if search_query %} for "{{ search_query }}"{% endif %}.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

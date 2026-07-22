@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <h1 class="section-title">Your Cart</h1>
+
+    {% if cart.items.all %}
+      <div class="cart-layout">
+        <table class="cart-table" id="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cart-items-body">
+            {% for item in cart.items.all %}
+              <tr data-item-id="{{ item.id }}">
+                <td>
+                  <div class="cart-item__product">
+                    {% with image=item.variant.product.main_image %}
+                      {% if image %}
+                        <img src="{{ image.image.url }}" alt="" class="cart-item__thumb">
+                      {% endif %}
+                    {% endwith %}
+                    <div>
+                      <div class="cart-item__name">{{ item.variant.product.name }}</div>
+                      {% if item.variant.size or item.variant.color %}
+                        <div class="cart-item__variant">{{ item.variant.size }} {{ item.variant.color }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td>QAR {{ item.variant.price }}</td>
+                <td>
+                  <div class="qty-stepper">
+                    <button type="button" data-qty-decrease>&minus;</button>
+                    <input type="number" min="1" value="{{ item.quantity }}" data-qty-input>
+                    <button type="button" data-qty-increase>&plus;</button>
+                  </div>
+                </td>
+                <td class="cart-item__subtotal">QAR {{ item.subtotal }}</td>
+                <td><button type="button" class="btn-danger" data-remove-item>Remove</button></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="summary-card">
+          <h2 class="section-title" style="font-size:1.15rem">Order Summary</h2>
+          <div class="summary-row">
+            <span>Items</span>
+            <span id="summary-items">{{ cart.total_items }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="summary-total">QAR {{ cart.total_price }}</span>
+          </div>
+          <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block" style="margin-top:16px">Proceed to checkout</a>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>Your cart is empty.</p>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">Continue shopping</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('cart-table');
+    if (!table) return;
+
+    function updateRow(itemId, data) {
+      const item = data.items.find(i => i.id === itemId);
+      const row = table.querySelector(`tr[data-item-id="${itemId}"]`);
+      if (item && row) {
+        row.querySelector('.cart-item__subtotal').textContent = `QAR ${item.subtotal}`;
+        row.querySelector('[data-qty-input]').value = item.quantity;
+      } else if (row) {
+        row.remove();
+      }
+      document.getElementById('summary-items').textContent = data.total_items;
+      document.getElementById('summary-total').textContent = `QAR ${data.total_price}`;
+      document.getElementById('cart-count').textContent = data.total_items;
+      if (data.items.length === 0) {
+        window.location.reload();
+      }
+    }
+
+    table.addEventListener('click', function (e) {
+      const row = e.target.closest('tr[data-item-id]');
+      if (!row) return;
+      const itemId = row.dataset.itemId;
+      const qtyInput = row.querySelector('[data-qty-input]');
+
+      if (e.target.matches('[data-qty-increase]')) {
+        window.ELinkCart.updateItem(itemId, parseInt(qtyInput.value, 10) + 1).then(d => updateRow(itemId, d));
+      } else if (e.target.matches('[data-qty-decrease]')) {
+        const next = Math.max(1, parseInt(qtyInput.value, 10) - 1);
+        window.ELinkCart.updateItem(itemId, next).then(d => updateRow(itemId, d));
+      } else if (e.target.matches('[data-remove-item]')) {
+        window.ELinkCart.removeItem(itemId).then(d => updateRow(itemId, d));
+      }
+    });
+
+    table.addEventListener('change', function (e) {
+      if (e.target.matches('[data-qty-input]')) {
+        const row = e.target.closest('tr[data-item-id]');
+        const itemId = row.dataset.itemId;
+        const qty = Math.max(1, parseInt(e.target.value, 10) || 1);
+        window.ELinkCart.updateItem(itemId, qty).then(d => updateRow(itemId, d));
+      }
+    });
+  });
+</script>
+{% endblock %}
