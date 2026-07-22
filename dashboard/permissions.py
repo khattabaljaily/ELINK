@@ -15,3 +15,11 @@ class ManagerRequiredMixin(StaffRequiredMixin):
 
     def test_func(self):
         return super().test_func() and self.request.user.is_manager
+
+
+class SuperuserRequiredMixin(StaffRequiredMixin):
+    """Destructive actions (deleting records, cancelling orders) are superuser-only —
+    regular staff and managers can't lose data or void a sale on their own."""
+
+    def test_func(self):
+        return super().test_func() and self.request.user.is_superuser

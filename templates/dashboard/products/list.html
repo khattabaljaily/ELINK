@@ -45,7 +45,7 @@
                   <div class="table-thumb"></div>
                 {% endif %}
               </td>
-              <td data-label="Name">{{ product.name }}</td>
+              <td class="wrap" data-label="Name">{{ product.name }}</td>
               <td data-label="Category">{{ product.category.name }}</td>
               <td data-label="Price">QAR {{ product.price }}</td>
               <td data-label="Stock">{{ product.total_stock }}</td>
@@ -59,12 +59,14 @@
               <td class="card-actions">
                 <div class="table-actions">
                   <a href="{% url 'dashboard:product_edit' product.pk %}" class="btn btn-outline btn-sm">Edit</a>
-                  <button type="button" class="btn btn-danger btn-sm"
-                    data-modal-confirm
-                    data-modal-url="{% url 'dashboard:product_delete' product.pk %}"
-                    data-modal-title="Delete product?"
-                    data-modal-message="Delete &quot;{{ product.name }}&quot;? This can&#39;t be undone."
-                    data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% if user.is_superuser %}
+                    <button type="button" class="btn btn-danger btn-sm"
+                      data-modal-confirm
+                      data-modal-url="{% url 'dashboard:product_delete' product.pk %}"
+                      data-modal-title="Delete product?"
+                      data-modal-message="Delete &quot;{{ product.name }}&quot;? This can&#39;t be undone."
+                      data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% endif %}
                 </div>
               </td>
             </tr>

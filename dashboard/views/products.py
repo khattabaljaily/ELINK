@@ -8,7 +8,7 @@ from products.models import Category, Product
 
 from ..forms import ProductForm, ProductImageFormSet, VariantFormSet
 from ..mixins import AjaxDeleteMixin
-from ..permissions import StaffRequiredMixin
+from ..permissions import StaffRequiredMixin, SuperuserRequiredMixin
 
 
 class ProductListView(StaffRequiredMixin, ListView):
@@ -75,7 +75,7 @@ class ProductFormView(StaffRequiredMixin, View):
         return self.render_form(request, product, form, image_formset, variant_formset)
 
 
-class ProductDeleteView(AjaxDeleteMixin, StaffRequiredMixin, DeleteView):
+class ProductDeleteView(AjaxDeleteMixin, SuperuserRequiredMixin, DeleteView):
     model = Product
     template_name = 'dashboard/confirm_delete.html'
     success_url = reverse_lazy('dashboard:product_list')

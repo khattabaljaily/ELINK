@@ -8,48 +8,50 @@
 
     {% if cart.items.all %}
       <div class="cart-layout">
-        <table class="cart-table" id="cart-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Subtotal</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="cart-items-body">
-            {% for item in cart.items.all %}
-              <tr data-item-id="{{ item.id }}">
-                <td>
-                  <div class="cart-item__product">
-                    {% with image=item.variant.product.main_image %}
-                      {% if image %}
-                        <img src="{{ image.image.url }}" alt="" class="cart-item__thumb">
-                      {% endif %}
-                    {% endwith %}
-                    <div>
-                      <div class="cart-item__name">{{ item.variant.product.name }}</div>
-                      {% if item.variant.size or item.variant.color %}
-                        <div class="cart-item__variant">{{ item.variant.size }} {{ item.variant.color }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                </td>
-                <td>QAR {{ item.variant.price }}</td>
-                <td>
-                  <div class="qty-stepper">
-                    <button type="button" data-qty-decrease>&minus;</button>
-                    <input type="number" min="1" value="{{ item.quantity }}" data-qty-input>
-                    <button type="button" data-qty-increase>&plus;</button>
-                  </div>
-                </td>
-                <td class="cart-item__subtotal">QAR {{ item.subtotal }}</td>
-                <td><button type="button" class="btn-danger" data-remove-item>Remove</button></td>
+        <div class="cart-table-wrap">
+          <table class="cart-table" id="cart-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th></th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody id="cart-items-body">
+              {% for item in cart.items.all %}
+                <tr data-item-id="{{ item.id }}">
+                  <td>
+                    <div class="cart-item__product">
+                      {% with image=item.variant.product.main_image %}
+                        {% if image %}
+                          <img src="{{ image.image.url }}" alt="" class="cart-item__thumb">
+                        {% endif %}
+                      {% endwith %}
+                      <div class="cart-item__info">
+                        <div class="cart-item__name">{{ item.variant.product.name }}</div>
+                        {% if item.variant.size or item.variant.color %}
+                          <div class="cart-item__variant">{{ item.variant.size }} {{ item.variant.color }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Price">QAR {{ item.variant.price }}</td>
+                  <td data-label="Quantity">
+                    <div class="qty-stepper">
+                      <button type="button" data-qty-decrease>&minus;</button>
+                      <input type="number" min="1" value="{{ item.quantity }}" data-qty-input>
+                      <button type="button" data-qty-increase>&plus;</button>
+                    </div>
+                  </td>
+                  <td class="cart-item__subtotal" data-label="Subtotal">QAR {{ item.subtotal }}</td>
+                  <td class="cart-item__actions"><button type="button" class="btn-danger" data-remove-item>Remove</button></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
         <div class="summary-card">
           <h2 class="section-title" style="font-size:1.15rem">Order Summary</h2>

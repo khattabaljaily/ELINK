@@ -39,12 +39,14 @@
                 <div class="table-actions">
                   <button type="button" class="btn btn-outline btn-sm"
                     data-modal-url="{% url 'dashboard:order_detail' order.pk %}" data-modal-title="Order #{{ order.id }}">Edit</button>
-                  <button type="button" class="btn btn-danger btn-sm"
-                    data-modal-confirm
-                    data-modal-url="{% url 'dashboard:order_delete' order.pk %}"
-                    data-modal-title="Delete order?"
-                    data-modal-message="Delete order #{{ order.id }} for &quot;{{ order.full_name }}&quot;? This can&#39;t be undone."
-                    data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% if user.is_superuser %}
+                    <button type="button" class="btn btn-danger btn-sm"
+                      data-modal-confirm
+                      data-modal-url="{% url 'dashboard:order_delete' order.pk %}"
+                      data-modal-title="Delete order?"
+                      data-modal-message="Delete order #{{ order.id }} for &quot;{{ order.full_name }}&quot;? This can&#39;t be undone."
+                      data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% endif %}
                 </div>
               </td>
             </tr>

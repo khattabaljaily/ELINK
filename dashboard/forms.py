@@ -25,10 +25,28 @@ class ProductForm(forms.ModelForm):
         return name
 
 
+class BaseProductImageFormSet(forms.BaseInlineFormSet):
+    """Only one image can be primary — if more than one is checked
+    (e.g. JS was bypassed), keep the first and unset the rest."""
+
+    def clean(self):
+        super().clean()
+        primary_forms = [
+            form for form in self.forms
+            if getattr(form, 'cleaned_data', None)
+            and not form.cleaned_data.get('DELETE')
+            and form.cleaned_data.get('is_primary')
+        ]
+        for form in primary_forms[1:]:
+            form.cleaned_data['is_primary'] = False
+            form.instance.is_primary = False
+
+
 ProductImageFormSet = forms.inlineformset_factory(
     Product, ProductImage,
     fields=('image', 'alt_text', 'is_primary'),
-    extra=1, can_delete=True,
+    formset=BaseProductImageFormSet,
+    extra=0, can_delete=True,
 )
 
 VariantFormSet = forms.inlineformset_factory(
@@ -57,6 +75,21 @@ class OrderStatusForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ('status',)
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        if not (user and user.is_superuser):
+            self.fields['status'].choices = [
+                choice for choice in self.fields['status'].choices
+                if choice[0] != Order.Status.CANCELLED
+            ]
+
+    def clean_status(self):
+        status = self.cleaned_data['status']
+        if status == Order.Status.CANCELLED and not (self.user and self.user.is_superuser):
+            raise forms.ValidationError('Only a superuser can cancel an order.')
+        return status
 
 
 class EmployeeCreateForm(UserCreationForm):

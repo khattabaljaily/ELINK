@@ -41,7 +41,47 @@
 
           <div class="form-group">
             <label>Payment method</label>
-            <div class="alert alert-info">Cash on Delivery — pay when your order arrives. Other payment methods are coming soon.</div>
+            <div class="payment-options" id="payment-options">
+              {% for radio in form.payment_method %}
+                <label class="payment-option" data-method="{{ radio.data.value }}">
+                  {{ radio.tag }}
+                  <span>{{ radio.choice_label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {% for error in form.payment_method.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="payment-fields" data-payment-fields="card" hidden>
+            <div class="form-group">
+              <label for="{{ form.card_number.id_for_label }}">Card number</label>
+              {{ form.card_number }}
+              {% for error in form.card_number.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="{{ form.card_expiry.id_for_label }}">Expiry</label>
+                {{ form.card_expiry }}
+                {% for error in form.card_expiry.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+              </div>
+              <div class="form-group">
+                <label for="{{ form.card_cvv.id_for_label }}">CVV</label>
+                {{ form.card_cvv }}
+                {% for error in form.card_cvv.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-fields" data-payment-fields="paypal" hidden>
+            <div class="form-group">
+              <label for="{{ form.paypal_email.id_for_label }}">PayPal email</label>
+              {{ form.paypal_email }}
+              {% for error in form.paypal_email.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+
+          <div class="payment-fields" data-payment-fields="wallet" hidden>
+            <p class="text-muted">You'll be asked to confirm this order with Apple Pay or Google Pay after placing it.</p>
           </div>
 
           <button type="submit" class="btn btn-primary btn-block">Place order</button>
@@ -52,8 +92,8 @@
         <h2 style="font-size:1.05rem">Order summary</h2>
         {% for item in cart.items.all %}
           <div class="order-line">
-            <span>{{ item.quantity }} &times; {{ item.variant.product.name }}{% if item.variant.size or item.variant.color %} ({{ item.variant.size }} {{ item.variant.color }}){% endif %}</span>
-            <span>QAR {{ item.subtotal }}</span>
+            <span class="order-line__label">{{ item.quantity }} &times; {{ item.variant.product.name }}{% if item.variant.size or item.variant.color %} ({{ item.variant.size }} {{ item.variant.color }}){% endif %}</span>
+            <span class="order-line__amount">QAR {{ item.subtotal }}</span>
           </div>
         {% endfor %}
         <div class="summary-row total">
@@ -63,4 +103,24 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    const fieldBlocks = document.querySelectorAll('[data-payment-fields]');
+    const radios = document.querySelectorAll('#payment-options input[name="payment_method"]');
+
+    function syncFields() {
+      const checked = document.querySelector('#payment-options input[name="payment_method"]:checked');
+      const method = checked ? checked.value : 'cod';
+      fieldBlocks.forEach((block) => {
+        block.hidden = block.dataset.paymentFields !== method;
+      });
+    }
+
+    radios.forEach((radio) => radio.addEventListener('change', syncFields));
+    syncFields();
+  })();
+</script>
 {% endblock %}

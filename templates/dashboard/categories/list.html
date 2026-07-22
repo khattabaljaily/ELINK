@@ -26,12 +26,14 @@
                 <div class="table-actions">
                   <button type="button" class="btn btn-outline btn-sm"
                     data-modal-url="{% url 'dashboard:category_edit' category.pk %}" data-modal-title="Edit category">Edit</button>
-                  <button type="button" class="btn btn-danger btn-sm"
-                    data-modal-confirm
-                    data-modal-url="{% url 'dashboard:category_delete' category.pk %}"
-                    data-modal-title="Delete category?"
-                    data-modal-message="Delete &quot;{{ category.name }}&quot;? This can&#39;t be undone."
-                    data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% if user.is_superuser %}
+                    <button type="button" class="btn btn-danger btn-sm"
+                      data-modal-confirm
+                      data-modal-url="{% url 'dashboard:category_delete' category.pk %}"
+                      data-modal-title="Delete category?"
+                      data-modal-message="Delete &quot;{{ category.name }}&quot;? This can&#39;t be undone."
+                      data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% endif %}
                 </div>
               </td>
             </tr>

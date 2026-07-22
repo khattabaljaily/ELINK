@@ -45,23 +45,29 @@
       <div class="formset-head">
         <div>
           <h3>Images</h3>
-          <p>Drag a photo in, or click a tile to browse. The first image is used as the product's cover.</p>
+          <p>Drop multiple photos at once, or click below to browse. The first image is used as the product's cover.</p>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" data-add-row="images">+ Add image</button>
       </div>
+
+      <label class="image-multi-dropzone" id="images-multi-dropzone">
+        <input type="file" id="images-multi-input" accept="image/*" multiple>
+        <svg class="image-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg>
+        <span>Drag &amp; drop photos here, or click to upload multiple</span>
+      </label>
+
       {{ image_formset.management_form }}
       <div class="image-formset" data-formset="images">
         {% for image_form in image_formset %}
           <div class="image-row" data-formset-row>
             {% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}
-            <label class="image-dropzone{% if image_form.instance.pk and image_form.instance.image %} has-image{% endif %}"
+            <div class="image-dropzone{% if image_form.instance.pk and image_form.instance.image %} has-image{% endif %}"
               {% if image_form.instance.pk and image_form.instance.image %}style="background-image:url('{{ image_form.instance.image.url }}')"{% endif %}>
               {{ image_form.image }}
               <div class="image-dropzone__overlay">
                 <svg class="image-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg>
-                <span>Click or drop to upload</span>
+                <span>No photo yet</span>
               </div>
-            </label>
+            </div>
             <span class="image-dropzone__filename"></span>
             <div class="image-row__fields">
               <div class="form-group">
@@ -83,13 +89,13 @@
       </div>
       <template id="images-empty-form">
         <div class="image-row" data-formset-row>
-          <label class="image-dropzone">
+          <div class="image-dropzone">
             {{ image_formset.empty_form.image }}
             <div class="image-dropzone__overlay">
               <svg class="image-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg>
-              <span>Click or drop to upload</span>
+              <span>No photo yet</span>
             </div>
-          </label>
+          </div>
           <span class="image-dropzone__filename"></span>
           <div class="image-row__fields">
             <div class="form-group">

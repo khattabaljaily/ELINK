@@ -22,6 +22,7 @@
   <div class="form-group">
     <label for="{{ form.status.id_for_label }}">Status</label>
     {{ form.status }}
+    {% for error in form.status.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
   </div>
   <div class="form-actions">
     <button type="submit" class="btn btn-primary btn-sm">Update status</button>

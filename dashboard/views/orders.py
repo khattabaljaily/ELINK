@@ -9,7 +9,7 @@ from orders.models import Order
 
 from ..forms import OrderStatusForm
 from ..mixins import AjaxDeleteMixin, is_ajax
-from ..permissions import StaffRequiredMixin
+from ..permissions import StaffRequiredMixin, SuperuserRequiredMixin
 
 
 class OrderListView(StaffRequiredMixin, ListView):
@@ -42,7 +42,7 @@ class OrderDetailView(StaffRequiredMixin, View):
         order = get_object_or_404(
             Order.objects.select_related('user').prefetch_related('items'), pk=pk,
         )
-        form = OrderStatusForm(data, instance=order)
+        form = OrderStatusForm(data, instance=order, user=self.request.user)
         return order, form
 
     def get(self, request, pk):
@@ -66,7 +66,7 @@ class OrderDetailView(StaffRequiredMixin, View):
         return redirect('dashboard:order_detail', pk=pk)
 
 
-class OrderDeleteView(AjaxDeleteMixin, StaffRequiredMixin, DeleteView):
+class OrderDeleteView(AjaxDeleteMixin, SuperuserRequiredMixin, DeleteView):
     model = Order
     template_name = 'dashboard/confirm_delete.html'
     success_url = reverse_lazy('dashboard:order_list')

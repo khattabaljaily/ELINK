@@ -6,7 +6,7 @@ from products.models import Category
 
 from ..forms import CategoryForm
 from ..mixins import AjaxDeleteMixin, AjaxFormMixin
-from ..permissions import StaffRequiredMixin
+from ..permissions import StaffRequiredMixin, SuperuserRequiredMixin
 
 
 class CategoryListView(StaffRequiredMixin, ListView):
@@ -43,7 +43,7 @@ class CategoryUpdateView(AjaxFormMixin, StaffRequiredMixin, UpdateView):
         return response
 
 
-class CategoryDeleteView(AjaxDeleteMixin, StaffRequiredMixin, DeleteView):
+class CategoryDeleteView(AjaxDeleteMixin, SuperuserRequiredMixin, DeleteView):
     model = Category
     template_name = 'dashboard/confirm_delete.html'
     success_url = reverse_lazy('dashboard:category_list')

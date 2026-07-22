@@ -7,11 +7,12 @@ from django.views.generic import CreateView
 
 from orders.models import Order
 
-from .forms import RegisterForm
+from .forms import EmailOrUsernameAuthenticationForm, RegisterForm
 
 
 class AccountLoginView(LoginView):
     template_name = 'accounts/login.html'
+    authentication_form = EmailOrUsernameAuthenticationForm
     redirect_authenticated_user = True
 
     def get_default_redirect_url(self):

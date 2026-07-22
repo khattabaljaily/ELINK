@@ -49,7 +49,7 @@ def checkout(request):
 
                 order.recalculate_total()
 
-                gateway = get_gateway('cod')
+                gateway = get_gateway(form.cleaned_data['payment_method'])
                 gateway.initiate_payment(order)
 
                 cart.items.all().delete()

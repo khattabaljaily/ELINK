@@ -11,8 +11,8 @@
         <h2 style="font-size:1.05rem">Items</h2>
         {% for item in order.items.all %}
           <div class="order-line">
-            <span>{{ item.quantity }} &times; {{ item.product_name }}{% if item.variant_label %} ({{ item.variant_label }}){% endif %}</span>
-            <span>QAR {{ item.subtotal }}</span>
+            <span class="order-line__label">{{ item.quantity }} &times; {{ item.product_name }}{% if item.variant_label %} ({{ item.variant_label }}){% endif %}</span>
+            <span class="order-line__amount">QAR {{ item.subtotal }}</span>
           </div>
         {% endfor %}
         <div class="summary-row total">
