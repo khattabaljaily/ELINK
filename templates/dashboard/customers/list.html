@@ -1,0 +1,72 @@
+{% extends "dashboard/base.html" %}
+{% load humanize %}
+
+{% block page_title %}Customers{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Customers</h1>
+      <p>{{ customers|length }} registered customer{{ customers|length|pluralize }}.</p>
+    </div>
+  </div>
+
+  <div class="dash-table-wrap">
+    <table class="dash-table" id="customers-table">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Phone</th><th>Last activity</th><th>Location</th><th>Status</th><th class="no-sort"></th></tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+          <tr>
+            <td data-label="Name">{{ customer.get_full_name|default:customer.username }}</td>
+            <td data-label="Email">{{ customer.email }}</td>
+            <td data-label="Phone">{{ customer.phone|default:"—" }}</td>
+            <td data-label="Last activity">
+              {% if customer.last_seen_at %}
+                {{ customer.last_seen_at|naturaltime }}
+              {% else %}
+                Never
+              {% endif %}
+            </td>
+            <td data-label="Location">{{ customer.last_seen_location|default:"—" }}</td>
+            <td data-label="Status">
+              {% if customer.is_active %}
+                <span class="badge badge-active">Active</span>
+              {% else %}
+                <span class="badge badge-inactive">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="card-actions">
+              <div class="table-actions">
+                <button type="button" class="btn btn-outline btn-sm"
+                  data-modal-url="{% url 'dashboard:customer_detail' customer.pk %}"
+                  data-modal-title="{{ customer.get_full_name|default:customer.username }}">View</button>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block vendor_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+  $(function () {
+    $('#customers-table').DataTable({
+      lengthMenu: [20, 50, 100],
+      pageLength: 20,
+      order: [],
+      columnDefs: [{ targets: 'no-sort', orderable: false }],
+      language: { searchPlaceholder: 'Search customers…', search: '' },
+    });
+  });
+</script>
+{% endblock %}

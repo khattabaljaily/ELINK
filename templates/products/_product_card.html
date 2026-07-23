@@ -1,0 +1,24 @@
+{% load price_tags %}
+{% with variant=product.default_variant %}
+  <div class="product-card" style="animation-delay: {{ forloop.counter0|add:0 }}0ms">
+    <a href="{{ product.get_absolute_url }}" class="product-card__image">
+      {% if product.main_image %}
+        <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async" width="600" height="480">
+      {% else %}
+        <span class="product-card__placeholder">E LINK</span>
+      {% endif %}
+      {% if not variant %}<span class="product-card__ribbon">Out of stock</span>{% endif %}
+    </a>
+    <div class="product-card__body">
+      <a href="{{ product.get_absolute_url }}" class="product-card__link">
+        <span class="product-card__name">{{ product.name }}</span>
+      </a>
+      <span class="product-card__price">QAR {{ product.price|qar }}</span>
+      <button type="button" class="btn btn-primary product-card__add" data-quick-add
+        data-variant-id="{{ variant.id|default:'' }}" {% if not variant %}disabled{% endif %}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        {% if variant %}Add to cart{% else %}Out of stock{% endif %}
+      </button>
+    </div>
+  </div>
+{% endwith %}

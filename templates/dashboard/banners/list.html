@@ -1,0 +1,79 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Banners{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Banners</h1>
+      <p>{{ banners|length }} banner{{ banners|length|pluralize }}.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-modal-url="{% url 'dashboard:banner_create' %}" data-modal-title="Add banner">+ Add banner</button>
+  </div>
+
+  {% if banners %}
+    <div class="dash-table-wrap">
+      <table class="dash-table" id="banners-table">
+        <thead>
+          <tr><th>Preview</th><th>Name</th><th>Placement</th><th>Order</th><th>Status</th><th class="no-sort"></th></tr>
+        </thead>
+        <tbody>
+          {% for banner in banners %}
+            <tr>
+              <td data-label="Preview"><img src="{{ banner.image.url }}" alt="" style="height:40px;border-radius:6px;object-fit:cover;"></td>
+              <td data-label="Name" class="wrap">{{ banner.name }}</td>
+              <td data-label="Placement">{{ banner.get_placement_display }}</td>
+              <td data-label="Order">{{ banner.order }}</td>
+              <td data-label="Status">
+                {% if banner.is_active %}
+                  <span class="badge badge-active">Active</span>
+                {% else %}
+                  <span class="badge badge-inactive">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="card-actions">
+                <div class="table-actions">
+                  <button type="button" class="btn btn-outline btn-sm"
+                    data-modal-url="{% url 'dashboard:banner_edit' banner.pk %}" data-modal-title="Edit banner">Edit</button>
+                  {% if user.is_superuser %}
+                    <button type="button" class="btn btn-danger btn-sm"
+                      data-modal-confirm
+                      data-modal-url="{% url 'dashboard:banner_delete' banner.pk %}"
+                      data-modal-title="Delete banner?"
+                      data-modal-message="Delete &quot;{{ banner.name }}&quot;? This can&#39;t be undone."
+                      data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="dash-empty">
+      <p>No banners yet.</p>
+      <button type="button" class="btn btn-primary" data-modal-url="{% url 'dashboard:banner_create' %}" data-modal-title="Add banner">Add your first banner</button>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block vendor_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+  $(function () {
+    $('#banners-table').DataTable({
+      lengthMenu: [20, 50, 100],
+      pageLength: 20,
+      order: [],
+      columnDefs: [{ targets: 'no-sort', orderable: false }],
+      language: { searchPlaceholder: 'Search banners…', search: '' },
+    });
+  });
+</script>
+{% endblock %}

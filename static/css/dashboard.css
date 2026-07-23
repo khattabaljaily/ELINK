@@ -84,6 +84,8 @@ p { margin: 0 0 1em; }
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dash-sidebar__brand {
@@ -107,15 +109,6 @@ p { margin: 0 0 1em; }
   flex-direction: column;
   gap: 3px;
   flex: 1;
-}
-
-.dash-nav__heading {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: rgba(255, 255, 255, 0.35);
-  padding: 16px 12px 6px;
 }
 
 .dash-nav a {
@@ -328,7 +321,7 @@ label {
 }
 
 input[type="text"], input[type="email"], input[type="password"], input[type="number"],
-input[type="search"], select, textarea {
+input[type="search"], input[type="url"], input[type="tel"], select, textarea {
   width: 100%;
   padding: 10px 13px;
   border: 1.5px solid var(--color-border);
@@ -338,6 +331,36 @@ input[type="search"], select, textarea {
   font-size: 0.9rem;
   color: var(--color-text);
   transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-navy);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: var(--color-border);
 }
 
 select {
@@ -353,6 +376,11 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 input[type="checkbox"] { width: auto; margin-right: 8px; }
@@ -1257,7 +1285,7 @@ table.dataTable thead th:not(.no-sort) { user-select: none; }
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 8px 0;
+    padding: 8px 0 !important;
     border: none;
     white-space: normal;
     text-align: right;

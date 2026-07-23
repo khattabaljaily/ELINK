@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 from django.utils.text import slugify
 
+from ads.models import Banner
 from orders.models import Order, ReturnRequest
 from products.models import Category, Product, ProductImage, Variant
 
@@ -133,8 +134,14 @@ class EmployeeUpdateForm(forms.ModelForm):
 class SiteSettingsForm(forms.ModelForm):
     class Meta:
         model = SiteSettings
-        fields = ('maintenance_mode', 'coming_soon_message')
+        fields = ('maintenance_mode', 'coming_soon_message', 'ads_enabled')
         widgets = {'coming_soon_message': forms.Textarea(attrs={'rows': 4})}
+
+
+class BannerForm(forms.ModelForm):
+    class Meta:
+        model = Banner
+        fields = ('name', 'placement', 'image', 'target_url', 'alt_text', 'order', 'is_active')
 
 
 class ReturnRequestStatusForm(forms.ModelForm):

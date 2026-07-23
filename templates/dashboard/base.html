@@ -24,20 +24,17 @@
       </a>
 
       <nav class="dash-nav">
-        <div class="dash-nav__heading">Overview</div>
         <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">
           <span class="dash-nav__icon">&#9632;</span> Dashboard
         </a>
 
-        <div class="dash-nav__heading">Catalog</div>
         <a href="{% url 'dashboard:product_list' %}" class="{% if 'product' in request.resolver_match.url_name %}is-active{% endif %}">
-          <span class="dash-nav__icon">&#9634;</span> Products
+          <span class="dash-nav__icon">&#128230;</span> Products
         </a>
         <a href="{% url 'dashboard:category_list' %}" class="{% if 'category' in request.resolver_match.url_name %}is-active{% endif %}">
           <span class="dash-nav__icon">&#9776;</span> Categories
         </a>
 
-        <div class="dash-nav__heading">Sales</div>
         <a href="{% url 'dashboard:order_list' %}" class="{% if 'order' in request.resolver_match.url_name %}is-active{% endif %}">
           <span class="dash-nav__icon">&#8677;</span> Orders
         </a>
@@ -46,15 +43,19 @@
         </a>
 
         {% if user.is_manager %}
-          <div class="dash-nav__heading">Team</div>
+          <a href="{% url 'dashboard:customer_list' %}" class="{% if 'customer' in request.resolver_match.url_name %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#128100;</span> Customers
+          </a>
           <a href="{% url 'dashboard:employee_list' %}" class="{% if 'employee' in request.resolver_match.url_name %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128101;</span> Employees
           </a>
           <a href="{% url 'dashboard:reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128202;</span> Reports
           </a>
+          <a href="{% url 'dashboard:banner_list' %}" class="{% if 'banner' in request.resolver_match.url_name %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#128227;</span> Banners
+          </a>
 
-          <div class="dash-nav__heading">Site</div>
           <a href="{% url 'dashboard:settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}is-active{% endif %}">
             <span class="dash-nav__icon">&#9881;</span> Settings
           </a>

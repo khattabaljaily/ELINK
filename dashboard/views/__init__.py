@@ -1,4 +1,6 @@
+from .banners import BannerCreateView, BannerDeleteView, BannerListView, BannerUpdateView
 from .categories import CategoryCreateView, CategoryDeleteView, CategoryListView, CategoryUpdateView
+from .customers import CustomerDetailView, CustomerListView
 from .employees import (
     EmployeeCreateView,
     EmployeeListView,
@@ -22,4 +24,6 @@ __all__ = [
     'EmployeeListView', 'EmployeeCreateView', 'EmployeeUpdateView', 'EmployeeToggleActiveView', 'EmployeeSetPasswordView',
     'ReportsView',
     'SiteSettingsView',
+    'CustomerListView', 'CustomerDetailView',
+    'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',
 ]

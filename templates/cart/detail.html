@@ -7,6 +7,8 @@
   <div class="page">
     <h1 class="section-title">Your Cart</h1>
 
+    {% include "ads/_banner.html" with banner=banners.cart variant="wide" width=1200 height=140 %}
+
     {% if cart.items.all %}
       <div class="cart-layout">
         <div class="cart-table-wrap">

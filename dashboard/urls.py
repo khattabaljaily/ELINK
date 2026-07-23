@@ -31,7 +31,15 @@ urlpatterns = [
     path('employees/<int:pk>/toggle-active/', views.EmployeeToggleActiveView.as_view(), name='employee_toggle_active'),
     path('employees/<int:pk>/set-password/', views.EmployeeSetPasswordView.as_view(), name='employee_set_password'),
 
+    path('customers/', views.CustomerListView.as_view(), name='customer_list'),
+    path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='customer_detail'),
+
     path('reports/', views.ReportsView.as_view(), name='reports'),
+
+    path('banners/', views.BannerListView.as_view(), name='banner_list'),
+    path('banners/add/', views.BannerCreateView.as_view(), name='banner_create'),
+    path('banners/<int:pk>/edit/', views.BannerUpdateView.as_view(), name='banner_edit'),
+    path('banners/<int:pk>/delete/', views.BannerDeleteView.as_view(), name='banner_delete'),
 
     path('settings/', views.SiteSettingsView.as_view(), name='settings'),
 ]

@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}E LINK{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Shop everything you need at E LINK — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endblock %}">
   <link rel="icon" href="{% static 'img/logo/765824.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +35,9 @@
                 <svg class="user-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
               <div class="user-menu__panel" id="user-menu-panel">
+                {% if user.is_staff or user.is_superuser %}
+                  <a href="{% url 'dashboard:home' %}">Dashboard</a>
+                {% endif %}
                 <a href="{% url 'accounts:profile' %}">My account</a>
                 <a href="{% url 'accounts:orders' %}">My orders</a>
                 <form action="{% url 'accounts:logout' %}" method="post">

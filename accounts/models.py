@@ -13,6 +13,10 @@ class User(AbstractUser):
     city = models.CharField(max_length=100, blank=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.STAFF)
 
+    last_seen_at = models.DateTimeField(null=True, blank=True)
+    last_seen_ip = models.GenericIPAddressField(null=True, blank=True)
+    last_seen_location = models.CharField(max_length=150, blank=True)
+
     def __str__(self):
         return self.get_full_name() or self.username
 

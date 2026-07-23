@@ -4,6 +4,8 @@
 
 {% block title %}{% if category %}{{ category.name }}{% else %}Shop{% endif %} · E LINK{% endblock %}
 
+{% block meta_description %}{% if category %}{% if category.description %}{{ category.description }}{% else %}Shop {{ category.name }} at E LINK — cash on delivery, card, or digital wallet checkout.{% endif %}{% elif search_query %}Search results for "{{ search_query }}" at E LINK.{% else %}Shop the full E LINK catalog — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endif %}{% endblock %}
+
 {% block content %}
   {% if not category and not search_query %}
     <section class="hero">
@@ -24,6 +26,13 @@
         <img src="{% static 'img/logo/765824.png' %}" alt="">
       </div>
     </section>
+
+    {% if ads_enabled %}
+      <div class="ad-banner-row">
+        {% include "ads/_banner.html" with banner=banners.homepage_1 variant="compact" width=600 height=130 %}
+        {% include "ads/_banner.html" with banner=banners.homepage_2 variant="compact" width=600 height=130 %}
+      </div>
+    {% endif %}
   {% endif %}
 
   <div class="page" id="catalog">
@@ -42,35 +51,55 @@
       </div>
     </div>
 
-    {% if products %}
+    {% if sections %}
+      {% for section in sections %}
+        <div class="category-section">
+          <div class="category-section__header">
+            <h3 class="category-section__title">
+              {{ section.category.name }}
+              <span class="category-section__count">{{ section.product_count }}</span>
+            </h3>
+            {% if section.has_more %}
+              <a href="{{ section.category.get_absolute_url }}" class="category-section__more">
+                Show more <span class="category-section__more-arrow">&rarr;</span>
+              </a>
+            {% endif %}
+          </div>
+          <div class="product-grid">
+            {% for product in section.products %}
+              {% include "products/_product_card.html" %}
+            {% endfor %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <p>No products found.</p>
+        </div>
+      {% endfor %}
+    {% elif products %}
       <div class="product-grid">
         {% for product in products %}
-          {% with variant=product.default_variant %}
-            <div class="product-card" style="animation-delay: {{ forloop.counter0|add:0 }}0ms">
-              <a href="{{ product.get_absolute_url }}" class="product-card__image">
-                {% if product.main_image %}
-                  <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}">
-                {% else %}
-                  <span class="product-card__placeholder">E LINK</span>
-                {% endif %}
-                <span class="product-card__badge">{{ product.category.name }}</span>
-                {% if not variant %}<span class="product-card__ribbon">Out of stock</span>{% endif %}
-              </a>
-              <div class="product-card__body">
-                <a href="{{ product.get_absolute_url }}" class="product-card__link">
-                  <span class="product-card__name">{{ product.name }}</span>
-                </a>
-                <span class="product-card__price">QAR {{ product.price|qar }}</span>
-                <button type="button" class="btn btn-primary product-card__add" data-quick-add
-                  data-variant-id="{{ variant.id|default:'' }}" {% if not variant %}disabled{% endif %}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                  {% if variant %}Add to cart{% else %}Out of stock{% endif %}
-                </button>
-              </div>
-            </div>
-          {% endwith %}
+          {% include "products/_product_card.html" %}
         {% endfor %}
       </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination" aria-label="Product pages">
+          {% if page_obj.has_previous %}
+            <a class="pagination__link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">&larr; Prev</a>
+          {% else %}
+            <span class="pagination__link is-disabled">&larr; Prev</span>
+          {% endif %}
+
+          <span class="pagination__status">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+          {% if page_obj.has_next %}
+            <a class="pagination__link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Next &rarr;</a>
+          {% else %}
+            <span class="pagination__link is-disabled">Next &rarr;</span>
+          {% endif %}
+        </nav>
+      {% endif %}
     {% else %}
       <div class="empty-state">
         <p>No products found{% if search_query %} for "{{ search_query }}"{% endif %}.</p>
