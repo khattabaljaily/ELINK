@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}My Orders · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Account</span>
+      <h1>My Orders</h1>
+      <p>Track your orders, and cancel or request a return directly from here.</p>
+    </div>
+
+    {% if orders %}
+      <div class="order-list-card">
+        {% for order in orders %}
+          <div class="order-row">
+            <div class="order-row__main">
+              <span>
+                <a href="{% url 'orders:detail' order.id %}"><strong>Order #{{ order.id }}</strong></a>
+                &middot; {{ order.created_at|date:"M d, Y" }}
+                &middot; <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+              </span>
+              <span class="text-muted" style="font-size:0.85rem">
+                {{ order.items.count }} item{{ order.items.count|pluralize }} &middot; QAR {{ order.total|qar }}
+              </span>
+            </div>
+
+            <div class="order-row__actions">
+              <a href="{% url 'orders:detail' order.id %}" class="btn btn-outline btn-sm">View details</a>
+
+              {% if order.is_cancellable %}
+                <form method="post" action="{% url 'orders:cancel' order.id %}"
+                  onsubmit="return confirm('Cancel order #{{ order.id }}? This can\'t be undone.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline btn-sm">Cancel order</button>
+                </form>
+              {% endif %}
+
+              {% if order.open_return %}
+                <span class="badge badge-{{ order.open_return.status }}">Return: {{ order.open_return.get_status_display }}</span>
+              {% elif order.status == 'delivered' %}
+                <a href="{% url 'orders:request_return' order.id %}" class="btn btn-outline btn-sm">Return / report an issue</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>You haven't placed any orders yet.</p>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">Start shopping</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

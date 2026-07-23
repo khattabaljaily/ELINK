@@ -34,6 +34,10 @@
               <div class="table-actions">
                 <button type="button" class="btn btn-outline btn-sm"
                   data-modal-url="{% url 'dashboard:employee_edit' employee.pk %}" data-modal-title="Edit employee">Edit</button>
+                {% if user.is_superuser %}
+                  <button type="button" class="btn btn-outline btn-sm"
+                    data-modal-url="{% url 'dashboard:employee_set_password' employee.pk %}" data-modal-title="Set password">Set password</button>
+                {% endif %}
                 {% if employee != user %}
                   <button type="button" class="btn btn-danger btn-sm"
                     data-modal-confirm

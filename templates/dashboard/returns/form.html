@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Log a return — Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <h1>Log a return — Order #{{ order.id }}</h1>
+    <a href="{% url 'dashboard:order_detail' order.pk %}" class="btn btn-outline">&larr; Back to order</a>
+  </div>
+
+  <div class="dash-card" style="max-width:640px">
+    {% include 'dashboard/returns/_form_fields.html' %}
+  </div>
+{% endblock %}

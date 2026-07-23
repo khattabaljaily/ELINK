@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.utils import timezone
 from django.utils.text import slugify
 
-from orders.models import Order
+from orders.models import Order, ReturnRequest
 from products.models import Category, Product, ProductImage, Variant
 
 from .models import SiteSettings
@@ -14,7 +15,7 @@ User = get_user_model()
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ('name', 'category', 'description', 'price', 'is_active')
+        fields = ('name', 'category', 'description', 'price', 'warranty_months', 'is_active')
         widgets = {'description': forms.Textarea(attrs={'rows': 4})}
 
     def clean_name(self):
@@ -81,6 +82,7 @@ class OrderStatusForm(forms.ModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+        self._previous_status = self.instance.status
         if not (user and user.is_superuser):
             self.fields['status'].choices = [
                 choice for choice in self.fields['status'].choices
@@ -92,6 +94,21 @@ class OrderStatusForm(forms.ModelForm):
         if status == Order.Status.CANCELLED and not (self.user and self.user.is_superuser):
             raise forms.ValidationError('Only a superuser can cancel an order.')
         return status
+
+    def save(self, commit=True):
+        order = super().save(commit=False)
+
+        if order.status == Order.Status.DELIVERED and not order.delivered_at:
+            order.delivered_at = timezone.now()
+
+        if order.status == Order.Status.CANCELLED and self._previous_status != Order.Status.CANCELLED:
+            for item in order.items.select_related('variant'):
+                item.variant.stock += item.quantity
+                item.variant.save(update_fields=['stock'])
+
+        if commit:
+            order.save()
+        return order
 
 
 class EmployeeCreateForm(UserCreationForm):
@@ -118,3 +135,25 @@ class SiteSettingsForm(forms.ModelForm):
         model = SiteSettings
         fields = ('maintenance_mode', 'coming_soon_message')
         widgets = {'coming_soon_message': forms.Textarea(attrs={'rows': 4})}
+
+
+class ReturnRequestStatusForm(forms.ModelForm):
+    class Meta:
+        model = ReturnRequest
+        fields = ('status', 'staff_notes')
+        widgets = {'staff_notes': forms.Textarea(attrs={'rows': 3})}
+
+
+class DashboardReturnRequestForm(forms.ModelForm):
+    """Lets staff log a return on a customer's behalf (phone/email requests,
+    or guest-checkout orders that have no account to self-serve from).
+    Unlike the customer-facing form, this skips the eligibility-window
+    check — staff are trusted to use judgment."""
+
+    class Meta:
+        model = ReturnRequest
+        fields = ('reason', 'resolution_requested', 'description', 'status', 'staff_notes')
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'staff_notes': forms.Textarea(attrs={'rows': 3}),
+        }

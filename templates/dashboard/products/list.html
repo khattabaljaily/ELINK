@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load price_tags %}
 
 {% block page_title %}Products{% endblock %}
 
@@ -47,7 +48,7 @@
               </td>
               <td class="wrap" data-label="Name">{{ product.name }}</td>
               <td data-label="Category">{{ product.category.name }}</td>
-              <td data-label="Price">QAR {{ product.price }}</td>
+              <td data-label="Price">QAR {{ product.price|qar }}</td>
               <td data-label="Stock">{{ product.total_stock }}</td>
               <td data-label="Status">
                 {% if product.is_active %}

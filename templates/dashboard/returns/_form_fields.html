@@ -1,0 +1,40 @@
+<p class="text-muted" style="margin-bottom:14px;font-size:0.88rem;">
+  Logging a return for order <a href="{% url 'dashboard:order_detail' order.pk %}">#{{ order.id }}</a>
+  &middot; {{ order.full_name }}
+</p>
+
+<form method="post" action="{{ request.path }}">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<p class="form-errors">{{ form.non_field_errors }}</p>{% endif %}
+
+  <div class="form-group">
+    <label for="{{ form.reason.id_for_label }}">Reason</label>
+    {{ form.reason }}
+    {% for error in form.reason.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    <label for="{{ form.resolution_requested.id_for_label }}">Resolution</label>
+    {{ form.resolution_requested }}
+    {% for error in form.resolution_requested.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    <label for="{{ form.description.id_for_label }}">Customer's description</label>
+    {{ form.description }}
+  </div>
+
+  <div class="form-group">
+    <label for="{{ form.status.id_for_label }}">Status</label>
+    {{ form.status }}
+  </div>
+
+  <div class="form-group">
+    <label for="{{ form.staff_notes.id_for_label }}">Staff notes</label>
+    {{ form.staff_notes }}
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary btn-sm">Log return request</button>
+  </div>
+</form>

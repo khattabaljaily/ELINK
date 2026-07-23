@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load price_tags %}
 
 {% block page_title %}Dashboard{% endblock %}
 
@@ -13,7 +14,7 @@
   <div class="kpi-grid">
     <div class="kpi-card kpi-card--accent">
       <div class="kpi-card__label">Total revenue</div>
-      <div class="kpi-card__value">QAR {{ revenue|floatformat:2 }}</div>
+      <div class="kpi-card__value">QAR {{ revenue|qar }}</div>
       <div class="kpi-card__meta">Across {{ orders_count }} order{{ orders_count|pluralize }}</div>
     </div>
     <div class="kpi-card">
@@ -43,7 +44,7 @@
       </div>
       <div class="bar-chart">
         {% for point in chart %}
-          <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|floatformat:2 }}">
+          <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|qar }}">
             <div class="bar-chart__bar" style="height:{{ point.height }}%"></div>
             <span class="bar-chart__label">{{ point.label }}</span>
           </div>
@@ -90,7 +91,7 @@
                   <td>#{{ order.id }}</td>
                   <td>{{ order.full_name }}</td>
                   <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
-                  <td>QAR {{ order.total }}</td>
+                  <td>QAR {{ order.total|qar }}</td>
                 </tr>
               {% endfor %}
             </tbody>

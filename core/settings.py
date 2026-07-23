@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'orders',
     'payments',
     'dashboard',
+    'pages',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,17 @@ REST_FRAMEWORK = {
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'products:list'
 LOGOUT_REDIRECT_URL = 'products:list'
+
+
+# Transport security
+# Customer data (login credentials, addresses) must travel encrypted end to
+# end — required for THEQA trust-mark criterion 12. Left off under DEBUG so
+# local http:// development still works.
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, ReturnRequest
 
 
 class OrderItemInline(admin.TabularInline):
@@ -18,3 +18,10 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'email', 'phone')
     date_hierarchy = 'created_at'
     inlines = [OrderItemInline]
+
+
+@admin.register(ReturnRequest)
+class ReturnRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'reason', 'resolution_requested', 'status', 'created_at')
+    list_filter = ('status', 'reason', 'resolution_requested')
+    search_fields = ('order__full_name', 'order__email')

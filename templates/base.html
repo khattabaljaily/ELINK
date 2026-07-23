@@ -24,18 +24,24 @@
       <div class="site-nav" id="site-nav">
         <nav class="main-nav">
           <a href="{% url 'products:list' %}" class="{% if request.resolver_match.url_name == 'list' %}is-active{% endif %}">Shop</a>
-          {% if user.is_authenticated %}
-            <a href="{% url 'accounts:profile' %}">My Orders</a>
-          {% endif %}
         </nav>
 
         <div class="header-actions">
           {% if user.is_authenticated %}
-            <a href="{% url 'accounts:profile' %}" class="text-muted">Hi, {{ user.first_name|default:user.username }}</a>
-            <form action="{% url 'accounts:logout' %}" method="post" style="display:inline">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline btn-sm">Log out</button>
-            </form>
+            <div class="user-menu" id="user-menu">
+              <button type="button" class="user-menu__trigger" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu-panel">
+                Hi, {{ user.first_name|default:user.username }}
+                <svg class="user-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="user-menu__panel" id="user-menu-panel">
+                <a href="{% url 'accounts:profile' %}">My account</a>
+                <a href="{% url 'accounts:orders' %}">My orders</a>
+                <form action="{% url 'accounts:logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit">Log out</button>
+                </form>
+              </div>
+            </div>
           {% else %}
             <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-sm">Log in</a>
             <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Sign up</a>
@@ -98,11 +104,28 @@
         <div class="site-footer__heading">Account</div>
         <nav class="footer-links">
           {% if user.is_authenticated %}
-            <a href="{% url 'accounts:profile' %}">My orders</a>
+            <a href="{% url 'accounts:profile' %}">My account</a>
+            <a href="{% url 'accounts:orders' %}">My orders</a>
           {% else %}
             <a href="{% url 'accounts:login' %}">Log in</a>
             <a href="{% url 'accounts:register' %}">Sign up</a>
           {% endif %}
+        </nav>
+      </div>
+
+      <div>
+        <div class="site-footer__heading">Company</div>
+        <nav class="footer-links">
+          <a href="{% url 'pages:about' %}">About us</a>
+          <a href="{% url 'pages:contact' %}">Contact us</a>
+        </nav>
+      </div>
+
+      <div>
+        <div class="site-footer__heading">Legal</div>
+        <nav class="footer-links">
+          <a href="{% url 'pages:terms' %}">Terms &amp; Conditions</a>
+          <a href="{% url 'pages:privacy' %}">Privacy Policy</a>
         </nav>
       </div>
     </div>

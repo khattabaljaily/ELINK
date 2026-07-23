@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load price_tags %}
 
 {% block page_title %}Reports{% endblock %}
 
@@ -18,7 +19,7 @@
   <div class="kpi-grid">
     <div class="kpi-card kpi-card--accent">
       <div class="kpi-card__label">Revenue</div>
-      <div class="kpi-card__value">QAR {{ revenue|floatformat:2 }}</div>
+      <div class="kpi-card__value">QAR {{ revenue|qar }}</div>
       <div class="kpi-card__meta">Last {{ days }} days, cancelled excluded</div>
     </div>
     <div class="kpi-card">
@@ -32,7 +33,7 @@
     <div class="dash-card__title">Revenue over time</div>
     <div class="bar-chart">
       {% for point in chart %}
-        <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|floatformat:2 }}">
+        <div class="bar-chart__col" title="{{ point.label }}: QAR {{ point.value|qar }}">
           <div class="bar-chart__bar" style="height:{{ point.height }}%"></div>
           <span class="bar-chart__label">{{ point.label }}</span>
         </div>
@@ -67,7 +68,7 @@
               <tr>
                 <td class="wrap">{{ p.product_name }}</td>
                 <td>{{ p.qty }}</td>
-                <td>QAR {{ p.revenue|floatformat:2 }}</td>
+                <td>QAR {{ p.revenue|qar }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -85,7 +86,7 @@
               <tr>
                 <td class="wrap">{{ c.variant__product__category__name|default:"—" }}</td>
                 <td>{{ c.qty }}</td>
-                <td>QAR {{ c.revenue|floatformat:2 }}</td>
+                <td>QAR {{ c.revenue|qar }}</td>
               </tr>
             {% endfor %}
           </tbody>

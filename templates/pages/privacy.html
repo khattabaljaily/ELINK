@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Legal</span>
+      <h1>Privacy Policy</h1>
+      <p>This policy explains what personal data E LINK collects, why, and how it's protected.</p>
+    </div>
+
+    <div class="legal-layout">
+      <nav class="legal-toc">
+        <span class="legal-toc__heading">On this page</span>
+        <a href="#consent">Your consent</a>
+        <a href="#security">Data security</a>
+        <a href="#payment-data">Payment data</a>
+        <a href="#marketing">Marketing</a>
+        <a href="#third-party">Third-party sharing</a>
+        <a href="#storage">Storage &amp; retention</a>
+        <a href="#cookies">Cookies</a>
+      </nav>
+
+      <div class="legal-content">
+        <section id="consent">
+          <h2><span class="step-number">01</span> Your consent</h2>
+          <p>
+            When you create an account or place an order (with or without an
+            account), we ask you to confirm you've read and agree to this Privacy
+            Policy before we store or use your personal data. The data we collect
+            is limited to what's needed to process your purchase and delivery:
+            name, email, phone, and delivery address.
+          </p>
+        </section>
+
+        <section id="security">
+          <h2><span class="step-number">02</span> How we protect your data</h2>
+          <p>
+            Our site is served over HTTPS, and login/session cookies are marked
+            secure so credentials and personal data are encrypted in transit. We
+            do not store card numbers or CVV codes on our servers — see the
+            Payment data section below.
+          </p>
+        </section>
+
+        <section id="payment-data">
+          <h2><span class="step-number">03</span> Payment data</h2>
+          <p>
+            Currently, the only available payment method is Cash on Delivery, so
+            no card or bank details are collected at checkout. When we enable
+            online card payments, they will be processed through a PCI
+            DSS–compliant payment gateway — your card details will be sent
+            directly to that gateway and will never be stored on E LINK's servers.
+          </p>
+        </section>
+
+        <section id="marketing">
+          <h2><span class="step-number">04</span> Marketing materials</h2>
+          <p>
+            We do not currently share your contact information with any partner
+            or third party for marketing or promotional purposes. If this
+            changes, we'll update this section to name who we share data with and
+            how it's used, and we'll ask for your separate consent before sending
+            marketing communications.
+          </p>
+        </section>
+
+        <section id="third-party">
+          <h2><span class="step-number">05</span> Third-party data sharing</h2>
+          <p>
+            Your personal information is <strong>not sold, rented, or leased</strong>
+            to any third party. We only share the minimum necessary data with
+            service providers who help us operate the store — for example,
+            delivery couriers (to fulfill your order) and our database/hosting
+            provider (to store it securely) — and with government or law
+            enforcement authorities where required by Qatari law. Some pages load
+            fonts from Google Fonts, which receives your browser's IP address when
+            the page loads; this is limited to serving font files and isn't linked
+            to your E LINK account.
+          </p>
+        </section>
+
+        <section id="storage">
+          <h2><span class="step-number">06</span> Data collection &amp; storage</h2>
+          <p>
+            Account and order data (name, contact details, delivery address,
+            order history) is stored in our database, hosted with Contabo in
+            the European Union (Germany). We keep
+            this data for as long as your account is active, and order records
+            for as long as required by Qatari tax and commercial law after that;
+            once data is no longer required for these purposes, it is deleted.
+            You can request deletion of your account data at any time by emailing
+            <a href="mailto:support@elinkonline.com">support@elinkonline.com</a>, subject to
+            records we're legally required to keep.
+          </p>
+        </section>
+
+        <section id="cookies">
+          <h2><span class="step-number">07</span> Cookies</h2>
+          <p>We use a small number of cookies, all necessary for the site to function:</p>
+          <ul>
+            <li><strong>Session cookie</strong> — keeps you logged in and remembers your cart between pages.</li>
+            <li><strong>CSRF cookie</strong> — protects forms (login, checkout) from cross-site request forgery.</li>
+          </ul>
+          <p>
+            We don't currently use advertising, analytics, or tracking cookies. If
+            that changes, this section will be updated and, where required, we'll
+            ask for your consent first.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+{% endblock %}

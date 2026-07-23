@@ -30,6 +30,10 @@ class Product(models.Model):
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    warranty_months = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Warranty period in months. Leave blank if this product carries no warranty.",
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

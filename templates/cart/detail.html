@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load price_tags %}
 
 {% block title %}Your Cart · E LINK{% endblock %}
 
@@ -37,7 +38,7 @@
                       </div>
                     </div>
                   </td>
-                  <td data-label="Price">QAR {{ item.variant.price }}</td>
+                  <td data-label="Price">QAR {{ item.variant.price|qar }}</td>
                   <td data-label="Quantity">
                     <div class="qty-stepper">
                       <button type="button" data-qty-decrease>&minus;</button>
@@ -45,7 +46,7 @@
                       <button type="button" data-qty-increase>&plus;</button>
                     </div>
                   </td>
-                  <td class="cart-item__subtotal" data-label="Subtotal">QAR {{ item.subtotal }}</td>
+                  <td class="cart-item__subtotal" data-label="Subtotal">QAR {{ item.subtotal|qar }}</td>
                   <td class="cart-item__actions"><button type="button" class="btn-danger" data-remove-item>Remove</button></td>
                 </tr>
               {% endfor %}
@@ -61,7 +62,7 @@
           </div>
           <div class="summary-row total">
             <span>Total</span>
-            <span id="summary-total">QAR {{ cart.total_price }}</span>
+            <span id="summary-total">QAR {{ cart.total_price|qar }}</span>
           </div>
           <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block" style="margin-top:16px">Proceed to checkout</a>
         </div>
@@ -85,13 +86,13 @@
       const item = data.items.find(i => i.id === itemId);
       const row = table.querySelector(`tr[data-item-id="${itemId}"]`);
       if (item && row) {
-        row.querySelector('.cart-item__subtotal').textContent = `QAR ${item.subtotal}`;
+        row.querySelector('.cart-item__subtotal').textContent = `QAR ${window.ELinkCart.formatPrice(item.subtotal)}`;
         row.querySelector('[data-qty-input]').value = item.quantity;
       } else if (row) {
         row.remove();
       }
       document.getElementById('summary-items').textContent = data.total_items;
-      document.getElementById('summary-total').textContent = `QAR ${data.total_price}`;
+      document.getElementById('summary-total').textContent = `QAR ${window.ELinkCart.formatPrice(data.total_price)}`;
       document.getElementById('cart-count').textContent = data.total_items;
       if (data.items.length === 0) {
         window.location.reload();

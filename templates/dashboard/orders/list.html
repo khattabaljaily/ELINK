@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load price_tags %}
 
 {% block page_title %}Orders{% endblock %}
 
@@ -33,7 +34,7 @@
               <td data-label="Customer">{{ order.full_name }}</td>
               <td data-label="Phone">{{ order.phone }}</td>
               <td data-label="Status"><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
-              <td data-label="Total">QAR {{ order.total }}</td>
+              <td data-label="Total">QAR {{ order.total|qar }}</td>
               <td data-label="Date">{{ order.created_at|date:"d M Y" }}</td>
               <td class="card-actions">
                 <div class="table-actions">

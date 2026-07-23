@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Contact us · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Support</span>
+      <h1>Contact us</h1>
+      <p>Have a question about an order, delivery, or a product? Reach us any of the ways below.</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <span class="contact-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        </span>
+        <h3>Email</h3>
+        <p><a href="mailto:support@elinkonline.com">support@elinkonline.com</a></p>
+      </div>
+      <div class="contact-card">
+        <span class="contact-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        </span>
+        <h3>Phone</h3>
+        <p><a href="tel:+97455614644">+974 5561 4644</a></p>
+      </div>
+      <div class="contact-card">
+        <span class="contact-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </span>
+        <h3>Address</h3>
+        <p>Building 69, Floor 5, Street 220 (2nd Ring Road), Zone 26, Najma, Doha, Qatar</p>
+      </div>
+    </div>
+
+    <div class="legal-content">
+      <section>
+        <h2>Complaints procedure</h2>
+        <p>
+          If something about your order, delivery, or an item you purchased
+          isn't right, we want to hear about it and put it right.
+        </p>
+        <ol>
+          <li>Email <a href="mailto:support@elinkonline.com">support@elinkonline.com</a> with your order number and a description of the issue (photos help for damaged or incorrect items).</li>
+          <li>We acknowledge every complaint within <strong>2 business days</strong>.</li>
+          <li>We aim to resolve most complaints — replacement, refund, or exchange — within <strong>7 business days</strong> of acknowledgment. See our <a href="{% url 'pages:terms' %}">returns, damages, and warranty terms</a> for details.</li>
+          <li>If you're not satisfied with the outcome, ask to have your complaint escalated to a manager for review.</li>
+        </ol>
+      </section>
+    </div>
+  </div>
+{% endblock %}

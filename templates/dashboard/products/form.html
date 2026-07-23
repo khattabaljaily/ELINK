@@ -30,6 +30,12 @@
           {{ form.price }}
           {% for error in form.price.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
         </div>
+        <div class="form-group">
+          <label for="{{ form.warranty_months.id_for_label }}">Warranty (months)</label>
+          {{ form.warranty_months }}
+          <span class="helptext">Leave blank if this product carries no warranty.</span>
+          {% for error in form.warranty_months.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
         <div class="form-group full">
           <label for="{{ form.description.id_for_label }}">Description</label>
           {{ form.description }}

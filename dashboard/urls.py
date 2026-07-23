@@ -21,10 +21,15 @@ urlpatterns = [
     path('orders/<int:pk>/', views.OrderDetailView.as_view(), name='order_detail'),
     path('orders/<int:pk>/delete/', views.OrderDeleteView.as_view(), name='order_delete'),
 
+    path('returns/', views.ReturnRequestListView.as_view(), name='return_list'),
+    path('returns/<int:pk>/', views.ReturnRequestDetailView.as_view(), name='return_detail'),
+    path('orders/<int:order_id>/returns/add/', views.ReturnRequestCreateView.as_view(), name='return_create'),
+
     path('employees/', views.EmployeeListView.as_view(), name='employee_list'),
     path('employees/add/', views.EmployeeCreateView.as_view(), name='employee_create'),
     path('employees/<int:pk>/edit/', views.EmployeeUpdateView.as_view(), name='employee_edit'),
     path('employees/<int:pk>/toggle-active/', views.EmployeeToggleActiveView.as_view(), name='employee_toggle_active'),
+    path('employees/<int:pk>/set-password/', views.EmployeeSetPasswordView.as_view(), name='employee_set_password'),
 
     path('reports/', views.ReportsView.as_view(), name='reports'),
 

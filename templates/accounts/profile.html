@@ -1,29 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}My Orders · E LINK{% endblock %}
+{% block title %}My Account · E LINK{% endblock %}
 
 {% block content %}
   <div class="page">
-    <h1 class="section-title">My Orders</h1>
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Account</span>
+      <h1>My Account</h1>
+      <p>Manage your profile and password, and save your address to speed up checkout.</p>
+    </div>
 
-    {% if orders %}
-      <div class="order-list-card">
-        {% for order in orders %}
-          <div class="order-line">
-            <span>
-              <a href="{% url 'orders:detail' order.id %}"><strong>#{{ order.id }}</strong></a>
-              &middot; {{ order.created_at|date:"M d, Y" }}
-              &middot; <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
-            </span>
-            <span>QAR {{ order.total }}</span>
+    <div class="checkout-layout">
+      <div class="checkout-card">
+        <h2 style="font-size:1.05rem">Account details</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.first_name.id_for_label }}">First name</label>
+              {{ form.first_name }}
+              {% for error in form.first_name.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.last_name.id_for_label }}">Last name</label>
+              {{ form.last_name }}
+              {% for error in form.last_name.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
           </div>
-        {% endfor %}
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username }}
+              {% for error in form.username.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.phone.id_for_label }}">Phone</label>
+              {{ form.phone }}
+              {% for error in form.phone.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Delivery address</label>
+            {{ form.address }}
+            {% for error in form.address.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.city.id_for_label }}">City</label>
+            {{ form.city }}
+            {% for error in form.city.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+          </div>
+          <p class="text-muted" style="font-size:0.85rem;margin-bottom:16px">
+            Your saved address and phone number are used to pre-fill the checkout page.
+          </p>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
       </div>
-    {% else %}
-      <div class="empty-state">
-        <p>You haven't placed any orders yet.</p>
-        <a href="{% url 'products:list' %}" class="btn btn-primary">Start shopping</a>
+
+      <div class="order-list-card">
+        <h2 style="font-size:1.05rem">Signed in as</h2>
+        <p class="text-muted" style="font-size:0.9rem">{{ user.email }}</p>
+
+        <h2 style="font-size:1.05rem;margin-top:24px">Password</h2>
+        <p class="text-muted" style="font-size:0.9rem">Change your account password.</p>
+        <a href="{% url 'accounts:password_change' %}" class="btn btn-outline btn-block">Change password</a>
+
+        <h2 style="font-size:1.05rem;margin-top:24px">Orders</h2>
+        <p class="text-muted" style="font-size:0.9rem">View your order history, or cancel or return an order.</p>
+        <a href="{% url 'accounts:orders' %}" class="btn btn-outline btn-block">View my orders</a>
       </div>
-    {% endif %}
+    </div>
   </div>
 {% endblock %}

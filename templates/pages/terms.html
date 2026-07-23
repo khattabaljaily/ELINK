@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Terms &amp; Conditions · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Legal</span>
+      <h1>Terms &amp; Conditions</h1>
+      <p>These terms apply to every order placed on E LINK. See also our <a href="{% url 'pages:privacy' %}" style="color:#fff;text-decoration:underline">Privacy Policy</a>.</p>
+    </div>
+
+    <div class="legal-layout">
+      <nav class="legal-toc">
+        <span class="legal-toc__heading">On this page</span>
+        <a href="#general">General terms</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#payment">Payment &amp; fees</a>
+        <a href="#cancellation">Cancellation</a>
+        <a href="#returns">Returns &amp; refunds</a>
+        <a href="#damages">Damages &amp; defects</a>
+        <a href="#warranty">Warranty</a>
+      </nav>
+
+      <div class="legal-content">
+        <section id="general">
+          <h2><span class="step-number">01</span> General terms</h2>
+          <p>
+            By placing an order on E LINK you agree to these Terms &amp; Conditions.
+            We are E Link for Digital Shopping, CR number 247136 — see our
+            <a href="{% url 'pages:about' %}">About us</a> page for full organization
+            details.
+          </p>
+        </section>
+
+        <section id="pricing">
+          <h2><span class="step-number">02</span> Pricing</h2>
+          <p>
+            Every product page shows the exact price you'll pay. The total shown in
+            your cart and at checkout is the full amount charged for your order —
+            we don't add hidden fees at any step of the purchase process. If a
+            delivery fee, service charge, or loyalty discount ever applies, it will
+            be itemized as a separate line in your cart and order summary before
+            you confirm the order.
+          </p>
+        </section>
+
+        <section id="delivery">
+          <h2><span class="step-number">03</span> Delivery — time, terms &amp; fees</h2>
+          <p>
+            Estimated delivery time: within the next business day for Doha and
+            nearby areas, and 3–5 business days for the rest of Qatar. Orders are
+            processed Saturday–Thursday; Friday deliveries run a reduced afternoon
+            schedule. Delivery fees, if any, are shown before you place your
+            order. Once your order is placed, we email you the exact expected
+            delivery window. The recipient (or an authorized person) must be
+            present to receive and sign for the delivery.
+          </p>
+          <p>
+            Under Qatari consumer protection law, if we fail to deliver your order
+            within <strong>30 days</strong> of purchase, you're entitled to cancel
+            the order and receive a full refund.
+          </p>
+        </section>
+
+        <section id="payment">
+          <h2><span class="step-number">04</span> Payment methods &amp; fees</h2>
+          <p>
+            <strong>Cash on Delivery</strong> is currently our only available
+            payment method, at no extra charge. Card, Apple Pay/Google Pay, and
+            PayPal are shown at checkout but are not yet active — you cannot select
+            them until they're enabled. This section will be updated with any
+            applicable fees or restrictions when additional payment methods go
+            live.
+          </p>
+        </section>
+
+        <section id="cancellation">
+          <h2><span class="step-number">05</span> Order cancellation</h2>
+          <p>
+            You may cancel your order any time before it ships by emailing
+            <a href="mailto:support@elinkonline.com">support@elinkonline.com</a> with your order
+            number. As noted above, if delivery hasn't happened within 30 days of
+            your order, you're entitled to cancel and receive a full refund
+            regardless of shipping status.
+          </p>
+        </section>
+
+        <section id="returns">
+          <h2><span class="step-number">06</span> Returns, refunds &amp; exchanges</h2>
+          <p>
+            You may request a <strong>replacement or exchange within 7 days</strong>
+            of delivery, and a <strong>refund within 3 days</strong> of delivery,
+            provided the item is unused, unopened, and in its original packaging
+            with the original invoice. No restocking fee applies. To start a
+            return, email <a href="mailto:support@elinkonline.com">support@elinkonline.com</a>
+            with your order number and reason for return. We'll confirm the
+            outcome and next steps — see our <a href="{% url 'pages:contact' %}">complaints procedure</a>
+            for response times.
+          </p>
+        </section>
+
+        <section id="damages">
+          <h2><span class="step-number">07</span> Damages &amp; defects</h2>
+          <p>
+            If an item arrives damaged or with a manufacturing defect, you're
+            entitled to a free replacement or full refund. Email
+            <a href="mailto:support@elinkonline.com">support@elinkonline.com</a> within
+            <strong>24 hours</strong> of delivery with your order number and
+            photos of the issue, and we'll arrange a replacement, refund, or
+            exchange at no cost to you. Please keep the original packaging until
+            the claim is resolved.
+          </p>
+        </section>
+
+        <section id="warranty">
+          <h2><span class="step-number">08</span> Warranty</h2>
+          <p>
+            Where a product carries a manufacturer or seller warranty, the
+            warranty period, coverage, and eligibility are listed on that
+            product's page or invoice. Products sold as part of a promotional
+            bundle or special offer may be excluded from warranty coverage; any
+            such exclusion will be stated on the product page. To make a warranty
+            claim, contact <a href="mailto:support@elinkonline.com">support@elinkonline.com</a>
+            with your order number and a description of the fault.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+{% endblock %}

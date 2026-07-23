@@ -1,21 +1,22 @@
-import re
+from datetime import timedelta
 
 from django import forms
+from django.utils import timezone
 
-from .models import Order
+from .models import Order, ReturnRequest
 
+# Card/PayPal/wallet checkout isn't wired to a PCI-compliant payment gateway yet,
+# so the form only ever collects Cash on Delivery — no cardholder data touches
+# our server. Add the other methods here once a real gateway (e.g. Stripe
+# Elements, PayPal Checkout) is integrated.
 PAYMENT_METHOD_CHOICES = [
     ('cod', 'Cash on Delivery'),
-    ('card', 'Card (Visa/Mastercard)'),
-    ('wallet', 'Apple Pay / Google Pay'),
-    ('paypal', 'PayPal'),
+    ('card', 'Card (Visa/Mastercard) — coming soon'),
+    ('wallet', 'Apple Pay / Google Pay — coming soon'),
+    ('paypal', 'PayPal — coming soon'),
 ]
 
 READY_PAYMENT_METHODS = {'cod'}
-
-CARD_NUMBER_RE = re.compile(r'^\d{13,19}$')
-CARD_EXPIRY_RE = re.compile(r'^(0[1-9]|1[0-2])/\d{2}$')
-CARD_CVV_RE = re.compile(r'^\d{3,4}$')
 
 
 class CheckoutForm(forms.ModelForm):
@@ -23,22 +24,6 @@ class CheckoutForm(forms.ModelForm):
         choices=PAYMENT_METHOD_CHOICES,
         initial='cod',
         widget=forms.RadioSelect,
-    )
-    card_number = forms.CharField(
-        required=False, max_length=19,
-        widget=forms.TextInput(attrs={'placeholder': '1234 5678 9012 3456', 'autocomplete': 'cc-number'}),
-    )
-    card_expiry = forms.CharField(
-        required=False, max_length=5,
-        widget=forms.TextInput(attrs={'placeholder': 'MM/YY', 'autocomplete': 'cc-exp'}),
-    )
-    card_cvv = forms.CharField(
-        required=False, max_length=4,
-        widget=forms.TextInput(attrs={'placeholder': 'CVV', 'autocomplete': 'cc-csc'}),
-    )
-    paypal_email = forms.EmailField(
-        required=False,
-        widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'}),
     )
 
     class Meta:
@@ -48,31 +33,6 @@ class CheckoutForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'rows': 3}),
         }
 
-    def clean_card_number(self):
-        value = self.cleaned_data.get('card_number', '')
-        digits = value.replace(' ', '')
-        if self.data.get('payment_method') == 'card' and not CARD_NUMBER_RE.match(digits):
-            raise forms.ValidationError('Enter a valid card number.')
-        return value
-
-    def clean_card_expiry(self):
-        value = self.cleaned_data.get('card_expiry', '')
-        if self.data.get('payment_method') == 'card' and not CARD_EXPIRY_RE.match(value):
-            raise forms.ValidationError('Use MM/YY format.')
-        return value
-
-    def clean_card_cvv(self):
-        value = self.cleaned_data.get('card_cvv', '')
-        if self.data.get('payment_method') == 'card' and not CARD_CVV_RE.match(value):
-            raise forms.ValidationError('Enter a valid CVV.')
-        return value
-
-    def clean_paypal_email(self):
-        value = self.cleaned_data.get('paypal_email', '')
-        if self.data.get('payment_method') == 'paypal' and not value:
-            raise forms.ValidationError('Enter your PayPal email.')
-        return value
-
     def clean_payment_method(self):
         method = self.cleaned_data['payment_method']
         if method not in READY_PAYMENT_METHODS:
@@ -81,3 +41,53 @@ class CheckoutForm(forms.ModelForm):
                 f'{label} isn’t linked yet — please select Cash on Delivery to complete your order.'
             )
         return method
+
+
+class ReturnRequestForm(forms.ModelForm):
+    class Meta:
+        model = ReturnRequest
+        fields = ('reason', 'resolution_requested', 'description')
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'Add any details that will help us process this quickly.',
+            }),
+        }
+
+    def __init__(self, *args, order=None, **kwargs):
+        self.order = order
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        reason = cleaned_data.get('reason')
+        resolution = cleaned_data.get('resolution_requested')
+
+        if self.order is not None and reason and resolution:
+            if not self.order.delivered_at:
+                raise forms.ValidationError(
+                    'This order hasn’t been marked as delivered yet, so a return can’t be requested.'
+                )
+
+            elapsed = timezone.now() - self.order.delivered_at
+            if reason in (ReturnRequest.Reason.DAMAGED, ReturnRequest.Reason.DEFECTIVE):
+                window, window_label = timedelta(hours=24), '24 hours'
+            elif resolution == ReturnRequest.Resolution.REFUND:
+                window, window_label = timedelta(days=3), '3 days'
+            else:
+                window, window_label = timedelta(days=7), '7 days'
+
+            if elapsed > window:
+                raise forms.ValidationError(
+                    f'The window to request this ({window_label} after delivery) has passed. '
+                    'Please contact support directly for help.'
+                )
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.order = self.order
+        if commit:
+            instance.save()
+        return instance

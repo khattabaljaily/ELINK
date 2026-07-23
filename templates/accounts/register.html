@@ -5,15 +5,28 @@
 {% block content %}
   <div class="auth-card">
     <h1 class="section-title" style="font-size:1.4rem">Create your account</h1>
+    <p class="text-muted" style="margin-top:-12px;margin-bottom:20px;font-size:0.9rem">
+      Just your email and a password to get started — you can add your name and delivery address later from your account page.
+    </p>
     <form method="post" novalidate>
       {% csrf_token %}
       {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
-          {% for error in field.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
-        </div>
+        {% if field.name == 'privacy_consent' %}
+          <div class="form-group checkbox-field">
+            <label for="{{ field.id_for_label }}">
+              {{ field }}
+              <span>I agree to the <a href="{% url 'pages:privacy' %}" target="_blank" rel="noopener">Privacy Policy</a> and consent to my data being stored and used as described there.</span>
+            </label>
+            {% for error in field.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+          </div>
+        {% else %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+            {% for error in field.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
       {% endfor %}
       <button type="submit" class="btn btn-primary btn-block">Sign up</button>
     </form>

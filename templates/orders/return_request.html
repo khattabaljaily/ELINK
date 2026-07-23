@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Request return · Order #{{ order.id }} · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <h1 class="section-title">Request return — Order #{{ order.id }}</h1>
+
+    <div class="checkout-card" style="max-width:560px">
+      <p class="text-muted" style="margin-bottom:20px">
+        Let us know what happened and how you'd like it resolved. We'll review your
+        request and follow up by email. See our
+        <a href="{% url 'pages:terms' %}">returns &amp; warranty terms</a> for eligibility windows.
+      </p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <p class="form-errors">{{ form.non_field_errors }}</p>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="{{ form.reason.id_for_label }}">Reason</label>
+          {{ form.reason }}
+          {% for error in form.reason.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.resolution_requested.id_for_label }}">What would you like?</label>
+          {{ form.resolution_requested }}
+          {% for error in form.resolution_requested.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Details</label>
+          {{ form.description }}
+          {% for error in form.description.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit request</button>
+      </form>
+      <p class="auth-card__footer"><a href="{% url 'orders:detail' order.id %}">&larr; Back to order</a></p>
+    </div>
+  </div>
+{% endblock %}
