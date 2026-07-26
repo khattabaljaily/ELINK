@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Coupons{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Coupons</h1>
+      <p>{{ coupons|length }} coupon{{ coupons|length|pluralize }}.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-modal-url="{% url 'dashboard:coupon_create' %}" data-modal-title="Add coupon">+ Add coupon</button>
+  </div>
+
+  {% if coupons %}
+    <div class="dash-table-wrap">
+      <table class="dash-table" id="coupons-table">
+        <thead>
+          <tr><th>Code</th><th>Amount off</th><th>Used</th><th>Limits</th><th>Valid until</th><th>Status</th><th class="no-sort"></th></tr>
+        </thead>
+        <tbody>
+          {% for coupon in coupons %}
+            <tr>
+              <td data-label="Code"><strong>{{ coupon.code }}</strong></td>
+              <td data-label="Amount off">QAR {{ coupon.amount }}</td>
+              <td data-label="Used">{{ coupon.redemption_count }}{% if coupon.max_redemptions %} / {{ coupon.max_redemptions }}{% endif %}</td>
+              <td data-label="Limits">
+                {% if coupon.minimum_order_amount %}Min QAR {{ coupon.minimum_order_amount }}<br>{% endif %}
+                {% if coupon.max_redemptions_per_customer %}{{ coupon.max_redemptions_per_customer }} per customer{% endif %}
+              </td>
+              <td data-label="Valid until">{{ coupon.valid_until|date:"M d, Y"|default:"—" }}</td>
+              <td data-label="Status">
+                {% if coupon.is_active %}
+                  <span class="badge badge-active">Active</span>
+                {% else %}
+                  <span class="badge badge-inactive">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="card-actions">
+                <div class="table-actions">
+                  <button type="button" class="btn btn-outline btn-sm"
+                    data-modal-url="{% url 'dashboard:coupon_edit' coupon.pk %}" data-modal-title="Edit coupon">Edit</button>
+                  {% if user.is_superuser %}
+                    <button type="button" class="btn btn-danger btn-sm"
+                      data-modal-confirm
+                      data-modal-url="{% url 'dashboard:coupon_delete' coupon.pk %}"
+                      data-modal-title="Delete coupon?"
+                      data-modal-message="Delete &quot;{{ coupon.code }}&quot;? This can&#39;t be undone."
+                      data-modal-confirm-label="Yes, delete">Delete</button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="dash-empty">
+      <p>No coupons yet.</p>
+      <button type="button" class="btn btn-primary" data-modal-url="{% url 'dashboard:coupon_create' %}" data-modal-title="Add coupon">Add your first coupon</button>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block vendor_head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+  $(function () {
+    $('#coupons-table').DataTable({
+      lengthMenu: [20, 50, 100],
+      pageLength: 20,
+      order: [],
+      columnDefs: [{ targets: 'no-sort', orderable: false }],
+      language: { searchPlaceholder: 'Search coupons…', search: '' },
+    });
+  });
+</script>
+{% endblock %}

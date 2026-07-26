@@ -25,6 +25,9 @@ urlpatterns = [
     path('returns/<int:pk>/', views.ReturnRequestDetailView.as_view(), name='return_detail'),
     path('orders/<int:order_id>/returns/add/', views.ReturnRequestCreateView.as_view(), name='return_create'),
 
+    path('reviews/', views.ReviewListView.as_view(), name='review_list'),
+    path('reviews/<int:pk>/', views.ReviewDetailView.as_view(), name='review_detail'),
+
     path('employees/', views.EmployeeListView.as_view(), name='employee_list'),
     path('employees/add/', views.EmployeeCreateView.as_view(), name='employee_create'),
     path('employees/<int:pk>/edit/', views.EmployeeUpdateView.as_view(), name='employee_edit'),
@@ -40,6 +43,11 @@ urlpatterns = [
     path('banners/add/', views.BannerCreateView.as_view(), name='banner_create'),
     path('banners/<int:pk>/edit/', views.BannerUpdateView.as_view(), name='banner_edit'),
     path('banners/<int:pk>/delete/', views.BannerDeleteView.as_view(), name='banner_delete'),
+
+    path('coupons/', views.CouponListView.as_view(), name='coupon_list'),
+    path('coupons/add/', views.CouponCreateView.as_view(), name='coupon_create'),
+    path('coupons/<int:pk>/edit/', views.CouponUpdateView.as_view(), name='coupon_edit'),
+    path('coupons/<int:pk>/delete/', views.CouponDeleteView.as_view(), name='coupon_delete'),
 
     path('settings/', views.SiteSettingsView.as_view(), name='settings'),
 ]

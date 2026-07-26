@@ -10,6 +10,7 @@ class Cart(models.Model):
         related_name='cart', null=True, blank=True,
     )
     session_key = models.CharField(max_length=40, unique=True, null=True, blank=True)
+    coupon_code = models.CharField(max_length=32, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

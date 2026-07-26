@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from coupons.services import CouponError, apply_coupon_to_cart, remove_coupon_from_cart
 from products.models import Variant
 
 from .models import CartItem
@@ -57,4 +58,26 @@ class CartRemoveItemView(APIView):
         cart = get_cart(request)
         item = get_object_or_404(CartItem, pk=item_id, cart=cart)
         item.delete()
+        return Response(CartSerializer(cart).data)
+
+
+class CartApplyCouponView(APIView):
+    def post(self, request):
+        cart = get_cart(request)
+        code = (request.data.get('code') or '').strip()
+        if not code:
+            return Response({'detail': 'Please enter a coupon code.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            apply_coupon_to_cart(cart, code)
+        except CouponError as exc:
+            return Response({'detail': exc.message}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(CartSerializer(cart).data)
+
+
+class CartRemoveCouponView(APIView):
+    def post(self, request):
+        cart = get_cart(request)
+        remove_coupon_from_cart(cart)
         return Response(CartSerializer(cart).data)

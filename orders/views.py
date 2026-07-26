@@ -4,6 +4,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
 from cart.utils import get_cart
+from coupons.services import CouponError, calculate_discount, get_valid_coupon_for_cart, redeem_coupon_for_order
 from payments.registry import get_gateway
 from products.models import Variant
 
@@ -65,15 +66,26 @@ def checkout(request):
 
                     order.recalculate_total()
 
+                    if cart.coupon_code:
+                        redeem_coupon_for_order(order, cart.coupon_code)
+                        order.save(update_fields=['coupon_code', 'discount_total'])
+                        order.recalculate_total()
+
                     gateway = get_gateway(form.cleaned_data['payment_method'])
                     gateway.initiate_payment(order)
 
                     cart.items.all().delete()
+                    if cart.coupon_code:
+                        cart.coupon_code = ''
+                        cart.save(update_fields=['coupon_code'])
             except InsufficientStockError as exc:
                 messages.error(
                     request,
                     f'Sorry, "{exc.product_name}" no longer has enough stock. Please update your cart.',
                 )
+                return redirect('cart:detail')
+            except CouponError as exc:
+                messages.error(request, exc.message)
                 return redirect('cart:detail')
 
             send_order_confirmation(request, order)
@@ -81,10 +93,15 @@ def checkout(request):
     else:
         form = CheckoutForm(initial=initial)
 
+    coupon = get_valid_coupon_for_cart(cart)
+    discount = calculate_discount(cart)
     return render(request, 'orders/checkout.html', {
         'form': form,
         'cart': cart,
         'ready_payment_methods': READY_PAYMENT_METHODS,
+        'coupon': coupon,
+        'discount_amount': discount,
+        'total_after_discount': cart.total_price - discount,
     })
 
 

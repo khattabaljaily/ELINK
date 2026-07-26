@@ -6,8 +6,9 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from ads.models import Banner
+from coupons.models import Coupon
 from orders.models import Order, ReturnRequest
-from products.models import Category, Product, ProductImage, Variant
+from products.models import Category, Product, ProductImage, Review, Variant
 
 from .models import SiteSettings
 
@@ -146,9 +147,29 @@ class BannerForm(forms.ModelForm):
         fields = ('name', 'placement', 'image', 'target_url', 'alt_text', 'order', 'is_active')
 
 
+class CouponForm(forms.ModelForm):
+    class Meta:
+        model = Coupon
+        fields = (
+            'code', 'amount', 'is_active', 'valid_from', 'valid_until',
+            'minimum_order_amount', 'max_redemptions', 'max_redemptions_per_customer',
+        )
+        widgets = {
+            'valid_from': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'valid_until': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+
 class ReturnRequestStatusForm(forms.ModelForm):
     class Meta:
         model = ReturnRequest
+        fields = ('status', 'staff_notes')
+        widgets = {'staff_notes': forms.Textarea(attrs={'rows': 3})}
+
+
+class ReviewModerationForm(forms.ModelForm):
+    class Meta:
+        model = Review
         fields = ('status', 'staff_notes')
         widgets = {'staff_notes': forms.Textarea(attrs={'rows': 3})}
 

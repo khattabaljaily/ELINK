@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}{% if object %}Edit coupon{% else %}Add coupon{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <h1>{% if object %}Edit "{{ object.code }}"{% else %}Add coupon{% endif %}</h1>
+    <a href="{% url 'dashboard:coupon_list' %}" class="btn btn-outline">&larr; Back to coupons</a>
+  </div>
+
+  <div class="dash-card" style="max-width:520px;">
+    {% include "dashboard/coupons/_form_fields.html" %}
+  </div>
+{% endblock %}

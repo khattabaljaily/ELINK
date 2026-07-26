@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Write a review · {{ product.name }} · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <h1 class="section-title">Write a review — {{ product.name }}</h1>
+
+    <div class="checkout-card" style="max-width:560px">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <p class="form-errors">{{ form.non_field_errors }}</p>
+        {% endif %}
+
+        <div class="form-group">
+          <label>Rating</label>
+          {{ form.rating }}
+          {% for error in form.rating.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}">Title</label>
+          {{ form.title }}
+          {% for error in form.title.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.body.id_for_label }}">Your review</label>
+          {{ form.body }}
+          {% for error in form.body.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit review</button>
+      </form>
+      <p class="auth-card__footer"><a href="{{ product.get_absolute_url }}">&larr; Back to product</a></p>
+    </div>
+  </div>
+{% endblock %}

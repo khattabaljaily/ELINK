@@ -1,5 +1,6 @@
 from .banners import BannerCreateView, BannerDeleteView, BannerListView, BannerUpdateView
 from .categories import CategoryCreateView, CategoryDeleteView, CategoryListView, CategoryUpdateView
+from .coupons import CouponCreateView, CouponDeleteView, CouponListView, CouponUpdateView
 from .customers import CustomerDetailView, CustomerListView
 from .employees import (
     EmployeeCreateView,
@@ -13,6 +14,7 @@ from .orders import OrderDeleteView, OrderDetailView, OrderListView
 from .products import ProductDeleteView, ProductFormView, ProductListView
 from .reports import ReportsView
 from .returns import ReturnRequestCreateView, ReturnRequestDetailView, ReturnRequestListView
+from .reviews import ReviewDetailView, ReviewListView
 from .settings import SiteSettingsView
 
 __all__ = [
@@ -26,4 +28,6 @@ __all__ = [
     'SiteSettingsView',
     'CustomerListView', 'CustomerDetailView',
     'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',
+    'CouponListView', 'CouponCreateView', 'CouponUpdateView', 'CouponDeleteView',
+    'ReviewListView', 'ReviewDetailView',
 ]

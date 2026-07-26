@@ -62,11 +62,32 @@
             <span>Items</span>
             <span id="summary-items">{{ cart.total_items }}</span>
           </div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="summary-subtotal">QAR {{ cart.total_price|qar }}</span>
+          </div>
+          <div class="summary-row" id="summary-discount-row" {% if not coupon %}style="display:none"{% endif %}>
+            <span>Discount <span id="summary-coupon-code">{% if coupon %}({{ coupon.code }}){% endif %}</span></span>
+            <span id="summary-discount">&minus;QAR {{ discount_amount|qar }}</span>
+          </div>
           <div class="summary-row total">
             <span>Total</span>
-            <span id="summary-total">QAR {{ cart.total_price|qar }}</span>
+            <span id="summary-total">QAR {{ total_after_discount|qar }}</span>
           </div>
-          <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block" style="margin-top:16px">Proceed to checkout</a>
+
+          <div class="coupon-box" style="margin:16px 0">
+            <div id="coupon-applied-state" {% if not coupon %}style="display:none"{% endif %}>
+              <span class="badge badge-processing">Code "<span id="coupon-applied-code">{{ coupon.code }}</span>" applied</span>
+              <button type="button" class="btn-link" id="coupon-remove-btn" style="margin-left:8px">Remove</button>
+            </div>
+            <form id="coupon-form" data-no-spinner {% if coupon %}style="display:none"{% endif %} style="display:flex; gap:8px;">
+              <input type="text" id="coupon-input" placeholder="Coupon code" style="flex:1">
+              <button type="submit" class="btn btn-outline">Apply</button>
+            </form>
+            <p id="coupon-error" class="form-errors" style="display:none; margin-top:6px"></p>
+          </div>
+
+          <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block">Proceed to checkout</a>
         </div>
       </div>
     {% else %}
@@ -84,6 +105,30 @@
     const table = document.getElementById('cart-table');
     if (!table) return;
 
+    function updateSummary(data) {
+      document.getElementById('summary-items').textContent = data.total_items;
+      document.getElementById('summary-subtotal').textContent = `QAR ${window.ELinkCart.formatPrice(data.total_price)}`;
+      document.getElementById('summary-total').textContent = `QAR ${window.ELinkCart.formatPrice(data.total_after_discount)}`;
+      document.getElementById('cart-count').textContent = data.total_items;
+
+      const discountRow = document.getElementById('summary-discount-row');
+      const appliedState = document.getElementById('coupon-applied-state');
+      const form = document.getElementById('coupon-form');
+
+      if (data.coupon_code) {
+        discountRow.style.display = '';
+        document.getElementById('summary-coupon-code').textContent = `(${data.coupon_code})`;
+        document.getElementById('summary-discount').textContent = `−QAR ${window.ELinkCart.formatPrice(data.discount_amount)}`;
+        appliedState.style.display = '';
+        document.getElementById('coupon-applied-code').textContent = data.coupon_code;
+        form.style.display = 'none';
+      } else {
+        discountRow.style.display = 'none';
+        appliedState.style.display = 'none';
+        form.style.display = 'flex';
+      }
+    }
+
     function updateRow(itemId, data) {
       const item = data.items.find(i => i.id === itemId);
       const row = table.querySelector(`tr[data-item-id="${itemId}"]`);
@@ -93,12 +138,41 @@
       } else if (row) {
         row.remove();
       }
-      document.getElementById('summary-items').textContent = data.total_items;
-      document.getElementById('summary-total').textContent = `QAR ${window.ELinkCart.formatPrice(data.total_price)}`;
-      document.getElementById('cart-count').textContent = data.total_items;
+      updateSummary(data);
       if (data.items.length === 0) {
         window.location.reload();
       }
+    }
+
+    const couponForm = document.getElementById('coupon-form');
+    const couponError = document.getElementById('coupon-error');
+    const couponRemoveBtn = document.getElementById('coupon-remove-btn');
+
+    if (couponForm) {
+      couponForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const input = document.getElementById('coupon-input');
+        const code = input.value.trim();
+        if (!code) return;
+        couponError.style.display = 'none';
+
+        window.ELinkCart.applyCoupon(code)
+          .then((data) => {
+            input.value = '';
+            updateSummary(data);
+            window.ELinkCart.showToast('Coupon applied.');
+          })
+          .catch((err) => {
+            couponError.textContent = err.message;
+            couponError.style.display = 'block';
+          });
+      });
+    }
+
+    if (couponRemoveBtn) {
+      couponRemoveBtn.addEventListener('click', function () {
+        window.ELinkCart.removeCoupon().then((data) => updateSummary(data));
+      });
     }
 
     table.addEventListener('click', function (e) {

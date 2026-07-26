@@ -41,6 +41,9 @@
         <a href="{% url 'dashboard:return_list' %}" class="{% if 'return' in request.resolver_match.url_name %}is-active{% endif %}">
           <span class="dash-nav__icon">&#8630;</span> Returns
         </a>
+        <a href="{% url 'dashboard:review_list' %}" class="{% if 'review' in request.resolver_match.url_name %}is-active{% endif %}">
+          <span class="dash-nav__icon">&#9733;</span> Reviews
+        </a>
 
         {% if user.is_manager %}
           <a href="{% url 'dashboard:customer_list' %}" class="{% if 'customer' in request.resolver_match.url_name %}is-active{% endif %}">
@@ -54,6 +57,9 @@
           </a>
           <a href="{% url 'dashboard:banner_list' %}" class="{% if 'banner' in request.resolver_match.url_name %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128227;</span> Banners
+          </a>
+          <a href="{% url 'dashboard:coupon_list' %}" class="{% if 'coupon' in request.resolver_match.url_name %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#127991;</span> Coupons
           </a>
 
           <a href="{% url 'dashboard:settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}is-active{% endif %}">

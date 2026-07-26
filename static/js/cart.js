@@ -59,6 +59,18 @@
       });
   }
 
+  function applyCoupon(code) {
+    return request('/api/cart/apply-coupon/', { code: code });
+  }
+
+  function removeCoupon() {
+    return request('/api/cart/remove-coupon/', {})
+      .then((data) => {
+        showToast('Coupon removed.');
+        return data;
+      });
+  }
+
   function formatPrice(value) {
     const amount = Math.round(parseFloat(value));
     return Number.isFinite(amount) ? amount.toLocaleString('en-US') : value;
@@ -66,7 +78,7 @@
 
   window.CSRF_TOKEN = window.CSRF_TOKEN || (typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '');
 
-  window.ELinkCart = { addItem, updateItem, removeItem, showToast, formatPrice };
+  window.ELinkCart = { addItem, updateItem, removeItem, applyCoupon, removeCoupon, showToast, formatPrice };
 
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('[data-quick-add]');

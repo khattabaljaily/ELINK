@@ -70,9 +70,19 @@
             <span class="order-line__amount">QAR {{ item.subtotal|qar }}</span>
           </div>
         {% endfor %}
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>QAR {{ cart.total_price|qar }}</span>
+        </div>
+        {% if coupon %}
+          <div class="summary-row">
+            <span>Discount ({{ coupon.code }})</span>
+            <span>&minus;QAR {{ discount_amount|qar }}</span>
+          </div>
+        {% endif %}
         <div class="summary-row total">
           <span>Total</span>
-          <span>QAR {{ cart.total_price|qar }}</span>
+          <span>QAR {{ total_after_discount|qar }}</span>
         </div>
       </div>
     </div>

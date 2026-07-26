@@ -31,6 +31,9 @@ class Order(models.Model):
     address = models.TextField()
     city = models.CharField(max_length=100)
 
+    coupon_code = models.CharField(max_length=32, blank=True)
+    discount_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,7 +46,8 @@ class Order(models.Model):
         return f'Order #{self.pk}'
 
     def recalculate_total(self):
-        self.total = sum((item.subtotal for item in self.items.all()), start=0)
+        subtotal = sum((item.subtotal for item in self.items.all()), start=0)
+        self.total = max(subtotal - self.discount_total, 0)
         self.save(update_fields=['total'])
 
     @property

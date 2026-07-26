@@ -1,9 +1,12 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Window
 from django.db.models.functions import RowNumber
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .filters import ProductFilter
+from .forms import ReviewForm
 from .models import Category, Product
 
 PRODUCTS_PER_PAGE = 24
@@ -92,4 +95,32 @@ def product_detail(request, slug):
         Product.objects.select_related('category').prefetch_related('images', 'variants'),
         slug=slug, is_active=True,
     )
-    return render(request, 'products/detail.html', {'product': product})
+    return render(request, 'products/detail.html', {
+        'product': product,
+        'reviews': product.approved_reviews.select_related('user'),
+        'rating_summary': product.rating_summary,
+        'can_review': product.can_review(request.user),
+        'has_reviewed': product.has_reviewed(request.user),
+    })
+
+
+@login_required
+def submit_review(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+    if not product.can_review(request.user):
+        messages.error(request, 'You can only review products you’ve purchased, and only once per product.')
+        return redirect(product.get_absolute_url())
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            messages.success(request, 'Thanks! Your review has been submitted and is pending approval.')
+            return redirect(product.get_absolute_url())
+    else:
+        form = ReviewForm()
+
+    return render(request, 'products/review_form.html', {'form': form, 'product': product})

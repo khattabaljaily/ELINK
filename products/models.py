@@ -1,7 +1,9 @@
 from io import BytesIO
 
+from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.db import models
+from django.db.models import Avg, Count
 from django.urls import reverse
 from django.utils.text import slugify
 from PIL import Image, ImageOps
@@ -92,6 +94,32 @@ class Product(models.Model):
         in_stock = [v for v in self.variants.all() if v.stock > 0]
         return in_stock[0] if in_stock else None
 
+    @property
+    def approved_reviews(self):
+        return self.reviews.filter(status=Review.Status.APPROVED)
+
+    @property
+    def rating_summary(self):
+        agg = self.approved_reviews.aggregate(average=Avg('rating'), count=Count('id'))
+        average = agg['average'] or 0
+        return {'average': average, 'count': agg['count'], 'stars_full': round(average)}
+
+    def has_purchased(self, user):
+        if not user.is_authenticated:
+            return False
+        from orders.models import OrderItem
+        return OrderItem.objects.filter(
+            order__user=user, variant__product=self,
+        ).exclude(order__status='cancelled').exists()
+
+    def has_reviewed(self, user):
+        if not user.is_authenticated:
+            return False
+        return self.reviews.filter(user=user).exists()
+
+    def can_review(self, user):
+        return self.has_purchased(user) and not self.has_reviewed(user)
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
@@ -134,3 +162,27 @@ class Variant(models.Model):
     @property
     def in_stock(self):
         return self.stock > 0
+
+
+class Review(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending review'
+        APPROVED = 'approved', 'Approved'
+        REJECTED = 'rejected', 'Rejected'
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    title = models.CharField(max_length=150, blank=True)
+    body = models.TextField()
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    staff_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('product', 'user')
+
+    def __str__(self):
+        return f'{self.rating}★ review of {self.product.name} by {self.user}'

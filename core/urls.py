@@ -5,7 +5,14 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from cart.api import CartAddItemView, CartDetailView, CartRemoveItemView, CartUpdateItemView
+from cart.api import (
+    CartAddItemView,
+    CartApplyCouponView,
+    CartDetailView,
+    CartRemoveCouponView,
+    CartRemoveItemView,
+    CartUpdateItemView,
+)
 from core.views import robots_txt
 from products.api import CategoryViewSet, ProductViewSet
 from products.sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
@@ -20,6 +27,8 @@ api_urlpatterns = [
     path('cart/add/', CartAddItemView.as_view(), name='api-cart-add'),
     path('cart/items/<int:item_id>/update/', CartUpdateItemView.as_view(), name='api-cart-update'),
     path('cart/items/<int:item_id>/remove/', CartRemoveItemView.as_view(), name='api-cart-remove'),
+    path('cart/apply-coupon/', CartApplyCouponView.as_view(), name='api-cart-apply-coupon'),
+    path('cart/remove-coupon/', CartRemoveCouponView.as_view(), name='api-cart-remove-coupon'),
 ]
 
 sitemaps = {
