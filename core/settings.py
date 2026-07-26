@@ -216,6 +216,11 @@ LOGGING = {
             'style': '{',
         },
     },
+    'filters': {
+        'require_exception': {
+            '()': 'core.logging_filters.RequireExceptionInfo',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
@@ -232,6 +237,7 @@ LOGGING = {
         'mail_admins': {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
+            'filters': ['require_exception'],
         },
     },
     'root': {
