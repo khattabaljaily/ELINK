@@ -1,0 +1,10 @@
+Hi {{ order.full_name }},
+
+{{ status_message }}
+
+Order #{{ order.id }} is now: {{ order.get_status_display }}
+
+View your order: {{ order_url }}
+
+Questions? Contact support@elinkonline.com
+E LINK · Qatar

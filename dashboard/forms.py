@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
@@ -102,13 +103,14 @@ class OrderStatusForm(forms.ModelForm):
         if order.status == Order.Status.DELIVERED and not order.delivered_at:
             order.delivered_at = timezone.now()
 
-        if order.status == Order.Status.CANCELLED and self._previous_status != Order.Status.CANCELLED:
-            for item in order.items.select_related('variant'):
-                item.variant.stock += item.quantity
-                item.variant.save(update_fields=['stock'])
-
         if commit:
-            order.save()
+            with transaction.atomic():
+                if order.status == Order.Status.CANCELLED and self._previous_status != Order.Status.CANCELLED:
+                    for item in order.items.select_related('variant'):
+                        variant = Variant.objects.select_for_update().get(pk=item.variant_id)
+                        variant.stock += item.quantity
+                        variant.save(update_fields=['stock'])
+                order.save()
         return order
 
 

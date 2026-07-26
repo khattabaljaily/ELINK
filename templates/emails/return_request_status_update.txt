@@ -1,0 +1,10 @@
+Hi {{ order.full_name }},
+
+Your return request for order #{{ order.id }} has been updated.
+
+Status: {{ return_request.get_status_display }}
+
+View your order: {{ order_url }}
+
+Questions? Contact support@elinkonline.com
+E LINK · Qatar

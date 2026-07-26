@@ -1,0 +1,11 @@
+Hi {{ order.full_name }},
+
+We've received your return request for order #{{ order.id }} and will review it shortly.
+
+Reason: {{ return_request.get_reason_display }}
+Requested resolution: {{ return_request.get_resolution_requested_display }}
+
+View your order: {{ order_url }}
+
+Questions? Contact support@elinkonline.com
+E LINK · Qatar

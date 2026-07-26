@@ -1,0 +1,21 @@
+Thanks, {{ order.full_name }}!
+
+Your order #{{ order.id }} has been received and is being prepared.
+
+Order date: {{ order.created_at|date:"M d, Y" }}
+Payment method: {{ payment_method_label }}
+
+Items:
+{% for item in items %}- {{ item.product_name }}{% if item.variant_label %} ({{ item.variant_label }}){% endif %} x{{ item.quantity }} — QAR {{ item.subtotal|floatformat:2 }}
+{% endfor %}
+Total: QAR {{ order.total|floatformat:2 }}
+
+Shipping to:
+{{ order.full_name }}
+{{ order.address }}, {{ order.city }}
+{{ order.phone }}
+
+View your order: {{ order_url }}
+
+Questions? Contact support@elinkonline.com
+E LINK · Qatar

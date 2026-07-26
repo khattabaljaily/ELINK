@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import ListView
 
+from orders.emails import send_return_request_status_update
 from orders.models import Order, ReturnRequest
 
 from ..forms import DashboardReturnRequestForm, ReturnRequestStatusForm
@@ -49,8 +50,11 @@ class ReturnRequestDetailView(StaffRequiredMixin, View):
 
     def post(self, request, pk):
         obj, form = self.get_object_and_form(pk, data=request.POST)
+        previous_status = obj.status
         if form.is_valid():
             form.save()
+            if obj.status != previous_status:
+                send_return_request_status_update(request, obj)
             if is_ajax(request):
                 return JsonResponse({'success': True})
             messages.success(request, f'Return request #{obj.id} updated.')

@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import DeleteView, ListView
 
+from orders.emails import send_order_status_update
 from orders.models import Order
 
 from ..forms import OrderStatusForm
@@ -54,8 +55,11 @@ class OrderDetailView(StaffRequiredMixin, View):
 
     def post(self, request, pk):
         order, form = self.get_order_and_form(pk, data=request.POST)
+        previous_status = order.status
         if form.is_valid():
             form.save()
+            if order.status != previous_status:
+                send_order_status_update(request, order)
             if is_ajax(request):
                 return JsonResponse({'success': True})
             messages.success(request, f'Order #{order.id} status updated to "{order.get_status_display()}".')

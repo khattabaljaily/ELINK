@@ -5,9 +5,17 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from cart.utils import get_cart
 from payments.registry import get_gateway
+from products.models import Variant
 
+from .emails import send_order_confirmation, send_order_status_update, send_return_request_received
 from .forms import READY_PAYMENT_METHODS, CheckoutForm, ReturnRequestForm
 from .models import Order, OrderItem
+
+
+class InsufficientStockError(Exception):
+    def __init__(self, product_name):
+        self.product_name = product_name
+        super().__init__(product_name)
 
 
 def checkout(request):
@@ -30,32 +38,46 @@ def checkout(request):
     if request.method == 'POST':
         form = CheckoutForm(request.POST, initial=initial)
         if form.is_valid():
-            with transaction.atomic():
-                order = form.save(commit=False)
-                if request.user.is_authenticated:
-                    order.user = request.user
-                order.save()
+            try:
+                with transaction.atomic():
+                    order = form.save(commit=False)
+                    if request.user.is_authenticated:
+                        order.user = request.user
+                    order.save()
 
-                for item in cart.items.select_related('variant__product'):
-                    OrderItem.objects.create(
-                        order=order,
-                        variant=item.variant,
-                        product_name=item.variant.product.name,
-                        variant_label=' / '.join(p for p in (item.variant.size, item.variant.color) if p),
-                        unit_price=item.variant.price,
-                        quantity=item.quantity,
-                    )
-                    item.variant.stock = max(item.variant.stock - item.quantity, 0)
-                    item.variant.save(update_fields=['stock'])
+                    for item in cart.items.select_related('variant__product'):
+                        variant = Variant.objects.select_related('product').select_for_update().get(
+                            pk=item.variant_id,
+                        )
+                        if variant.stock < item.quantity:
+                            raise InsufficientStockError(variant.product.name)
 
-                order.recalculate_total()
+                        OrderItem.objects.create(
+                            order=order,
+                            variant=variant,
+                            product_name=variant.product.name,
+                            variant_label=' / '.join(p for p in (variant.size, variant.color) if p),
+                            unit_price=variant.price,
+                            quantity=item.quantity,
+                        )
+                        variant.stock -= item.quantity
+                        variant.save(update_fields=['stock'])
 
-                gateway = get_gateway(form.cleaned_data['payment_method'])
-                gateway.initiate_payment(order)
+                    order.recalculate_total()
 
-                cart.items.all().delete()
+                    gateway = get_gateway(form.cleaned_data['payment_method'])
+                    gateway.initiate_payment(order)
 
-            return redirect('orders:confirmation', order_id=order.pk)
+                    cart.items.all().delete()
+            except InsufficientStockError as exc:
+                messages.error(
+                    request,
+                    f'Sorry, "{exc.product_name}" no longer has enough stock. Please update your cart.',
+                )
+                return redirect('cart:detail')
+
+            send_order_confirmation(request, order)
+            return redirect('orders:confirmation', token=order.guest_token)
     else:
         form = CheckoutForm(initial=initial)
 
@@ -66,17 +88,14 @@ def checkout(request):
     })
 
 
-def confirmation(request, order_id):
-    order = get_object_or_404(Order, pk=order_id)
+def confirmation(request, token):
+    order = get_object_or_404(Order, guest_token=token)
     return render(request, 'orders/confirmation.html', {'order': order})
 
 
-def order_detail(request, order_id):
-    lookup = {'pk': order_id}
-    if request.user.is_authenticated:
-        lookup['user'] = request.user
+def order_detail(request, token):
     order = get_object_or_404(
-        Order.objects.prefetch_related('return_requests'), **lookup,
+        Order.objects.prefetch_related('return_requests'), guest_token=token,
     )
     open_return_request = next(
         (r for r in order.return_requests.all() if r.status in ('pending', 'approved')), None,
@@ -97,13 +116,15 @@ def cancel_order(request, order_id):
         else:
             with transaction.atomic():
                 for item in order.items.select_related('variant'):
-                    item.variant.stock += item.quantity
-                    item.variant.save(update_fields=['stock'])
+                    variant = Variant.objects.select_for_update().get(pk=item.variant_id)
+                    variant.stock += item.quantity
+                    variant.save(update_fields=['stock'])
                 order.status = Order.Status.CANCELLED
                 order.save(update_fields=['status'])
+            send_order_status_update(request, order)
             messages.success(request, f'Order #{order.id} has been cancelled.')
 
-    return redirect('orders:detail', order_id=order.id)
+    return redirect('orders:detail', token=order.guest_token)
 
 
 @login_required
@@ -112,18 +133,19 @@ def request_return(request, order_id):
 
     if order.status != Order.Status.DELIVERED:
         messages.error(request, 'Returns can only be requested for delivered orders.')
-        return redirect('orders:detail', order_id=order.id)
+        return redirect('orders:detail', token=order.guest_token)
 
     if order.return_requests.filter(status__in=['pending', 'approved']).exists():
         messages.info(request, 'You already have an open request for this order.')
-        return redirect('orders:detail', order_id=order.id)
+        return redirect('orders:detail', token=order.guest_token)
 
     if request.method == 'POST':
         form = ReturnRequestForm(request.POST, order=order)
         if form.is_valid():
-            form.save()
+            return_request = form.save()
+            send_return_request_received(request, return_request)
             messages.success(request, 'Your request has been submitted. We’ll get back to you shortly.')
-            return redirect('orders:detail', order_id=order.id)
+            return redirect('orders:detail', token=order.guest_token)
     else:
         form = ReturnRequestForm(order=order)
 

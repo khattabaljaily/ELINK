@@ -9,6 +9,7 @@ venv/
 db.sqlite3
 media/
 staticfiles/
+logs/
 
 secrets.json
 

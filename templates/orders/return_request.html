@@ -39,7 +39,7 @@
 
         <button type="submit" class="btn btn-primary btn-block">Submit request</button>
       </form>
-      <p class="auth-card__footer"><a href="{% url 'orders:detail' order.id %}">&larr; Back to order</a></p>
+      <p class="auth-card__footer"><a href="{% url 'orders:detail' order.guest_token %}">&larr; Back to order</a></p>
     </div>
   </div>
 {% endblock %}

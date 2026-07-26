@@ -14,6 +14,11 @@ SECRET_KEY = secrets['SECRET_KEY']
 DEBUG = secrets['DEBUG']
 ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
 
+# Obscured admin path. core.middleware.AdminAccessMiddleware also gates it
+# behind an existing superuser session, so even knowing this path doesn't
+# expose a login form to anonymous probing.
+ADMIN_URL = 'DDQ9R/'
+
 
 # Application definition
 
@@ -30,6 +35,7 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'django_filters',
+    'axes',
 
     # Local apps
     'accounts',
@@ -49,10 +55,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.AdminAccessMiddleware',
     'accounts.middleware.TrackUserActivityMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'dashboard.middleware.ComingSoonMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -93,8 +101,19 @@ if DATABASES['default']['ENGINE'].endswith('sqlite3'):
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
     'accounts.backends.EmailOrUsernameBackend',
 ]
+
+
+# Login brute-force protection (django-axes)
+# Locks out an ip+username pair after repeated failed logins instead of
+# allowing unlimited password guesses.
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # hour
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+AXES_RESET_ON_SUCCESS = True
 
 
 # Password validation
@@ -148,11 +167,90 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/min',
+        'user': '120/min',
+    },
 }
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'products:list'
 LOGOUT_REDIRECT_URL = 'products:list'
+
+
+# Email (Namecheap Private Email — mailboxes: noreply@, support@, info@elinkonline.com)
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.privateemail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = secrets['EMAIL']['HOST_USER']
+EMAIL_HOST_PASSWORD = secrets['EMAIL']['HOST_PASSWORD']
+DEFAULT_FROM_EMAIL = 'E LINK <noreply@elinkonline.com>'
+SERVER_EMAIL = 'noreply@elinkonline.com'
+
+ADMINS = [('Khattab', 'khattabaljaily@gmail.com')]
+MANAGERS = ADMINS
+
+
+# Logging
+# Errors also get emailed to ADMINS (see mail_admins handler below) on top
+# of the rotating file, now that SMTP is configured.
+
+(BASE_DIR / 'logs').mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'level': 'WARNING',
+        },
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
 
 
 # Transport security

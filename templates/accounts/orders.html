@@ -17,7 +17,7 @@
           <div class="order-row">
             <div class="order-row__main">
               <span>
-                <a href="{% url 'orders:detail' order.id %}"><strong>Order #{{ order.id }}</strong></a>
+                <a href="{% url 'orders:detail' order.guest_token %}"><strong>Order #{{ order.id }}</strong></a>
                 &middot; {{ order.created_at|date:"M d, Y" }}
                 &middot; <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
               </span>
@@ -27,7 +27,7 @@
             </div>
 
             <div class="order-row__actions">
-              <a href="{% url 'orders:detail' order.id %}" class="btn btn-outline btn-sm">View details</a>
+              <a href="{% url 'orders:detail' order.guest_token %}" class="btn btn-outline btn-sm">View details</a>
 
               {% if order.is_cancellable %}
                 <form method="post" action="{% url 'orders:cancel' order.id %}"

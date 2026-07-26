@@ -1,9 +1,10 @@
+from django.conf import settings as django_settings
 from django.shortcuts import render
 
 from .models import SiteSettings
 
 ALLOWED_PREFIXES = (
-    '/dashboard/', '/admin/', '/accounts/', '/static/', '/media/',
+    '/dashboard/', '/' + django_settings.ADMIN_URL, '/accounts/', '/static/', '/media/',
     '/robots.txt', '/sitemap.xml',
 )
 

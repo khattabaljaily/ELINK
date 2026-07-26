@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 
@@ -17,6 +19,11 @@ class Order(models.Model):
         related_name='orders', null=True, blank=True,
     )
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+
+    # Unguessable public identifier for order confirmation/detail links, so
+    # guest checkouts (no account) can view their own order without leaking
+    # every other order via sequential-id enumeration.
+    guest_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     full_name = models.CharField(max_length=150)
     email = models.EmailField()
