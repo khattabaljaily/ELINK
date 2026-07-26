@@ -35,7 +35,7 @@
     <div style="display:flex;flex-direction:column;gap:20px;">
       <div class="dash-card">
         <div class="dash-card__title">Status</div>
-        <form method="post" onsubmit="this.querySelector('button[type=submit]').disabled = true">
+        <form method="post" id="order-status-form">
           {% csrf_token %}
           <div class="form-group">
             {{ form.status }}

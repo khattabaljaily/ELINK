@@ -196,13 +196,17 @@
       </form>`;
   }
 
+  function setButtonLoading(btn, loadingLabel) {
+    if (!btn) return null;
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="btn-spinner"></span> ${loadingLabel}`;
+    return originalHtml;
+  }
+
   async function submitModalForm(form) {
     const submitBtn = form.querySelector('button[type="submit"]');
-    const originalLabel = submitBtn ? submitBtn.textContent : null;
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Saving…';
-    }
+    const originalHtml = setButtonLoading(submitBtn, 'Saving…');
 
     try {
       const res = await fetch(form.action || window.location.href, {
@@ -237,7 +241,7 @@
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = originalLabel;
+        submitBtn.innerHTML = originalHtml;
       }
     }
   }
@@ -271,6 +275,11 @@
     if (e.target.closest('#modal-body')) {
       e.preventDefault();
       submitModalForm(e.target);
+      return;
+    }
+
+    if (e.target.id === 'order-status-form') {
+      setButtonLoading(e.target.querySelector('button[type="submit"]'), 'Saving…');
     }
   });
 
