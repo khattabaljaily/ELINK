@@ -25,17 +25,3 @@ class SiteSettings(models.Model):
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
-
-
-class WaitlistSignup(models.Model):
-    """Visitor who asked to be notified when the storefront launches."""
-
-    email = models.EmailField(unique=True)
-    whatsapp_number = models.CharField(max_length=32, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return self.email

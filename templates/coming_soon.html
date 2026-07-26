@@ -6,43 +6,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coming soon · E LINK</title>
-  <meta name="description" content="E LINK is launching soon. Leave your email and we'll notify you the moment the store opens.">
+  <meta name="description" content="E LINK is launching soon. Check back shortly.">
   <link rel="icon" href="{% static 'img/logo/765824.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static_versioned 'css/style.css' %}">
   <style>
-    .coming-soon__form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 0 0 18px;
-    }
-    .coming-soon__form input[type="email"],
-    .coming-soon__form input[type="tel"] {
-      flex: 1 1 200px;
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      font-size: 0.92rem;
-    }
-    .coming-soon__form input::placeholder { color: rgba(255, 255, 255, 0.5); }
-    .coming-soon__form button {
-      flex: 1 1 100%;
-      margin-top: 10px;
-    }
-    .coming-soon__notice {
-      font-size: 0.88rem;
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      margin: 0 0 18px;
-    }
-    .coming-soon__notice.alert-success { background: rgba(41, 201, 79, 0.18); color: #cdece0; }
-    .coming-soon__notice.alert-info { background: rgba(15, 176, 126, 0.18); color: #cdece0; }
-    .coming-soon__notice.alert-error { background: rgba(224, 71, 58, 0.18); color: #ffd9d5; }
     .coming-soon {
       position: relative;
       min-height: 100vh;
@@ -331,19 +301,6 @@
 
       <h1 class="coming-soon__title">We'll be here shortly</h1>
       <p class="coming-soon__message">{{ message }}</p>
-
-      {% if messages %}
-        {% for notice in messages %}
-          <p class="coming-soon__notice alert-{{ notice.tags }}">{{ notice }}</p>
-        {% endfor %}
-      {% endif %}
-
-      <form class="coming-soon__form" action="{% url 'waitlist-signup' %}" method="post">
-        {% csrf_token %}
-        <input type="email" name="email" placeholder="Your email" required>
-        <input type="tel" name="whatsapp_number" placeholder="WhatsApp number (optional)">
-        <button type="submit" class="btn btn-primary">Notify me at launch</button>
-      </form>
 
       <svg class="coming-soon__link" viewBox="0 0 132 20" aria-hidden="true">
         <circle class="coming-soon__link-dot coming-soon__link-dot--a" cx="10" cy="10" r="5"/>

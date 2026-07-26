@@ -14,7 +14,6 @@ from .products import ProductDeleteView, ProductFormView, ProductListView
 from .reports import ReportsView
 from .returns import ReturnRequestCreateView, ReturnRequestDetailView, ReturnRequestListView
 from .settings import SiteSettingsView
-from .waitlist import WaitlistSignupView
 
 __all__ = [
     'DashboardHomeView',
@@ -27,5 +26,4 @@ __all__ = [
     'SiteSettingsView',
     'CustomerListView', 'CustomerDetailView',
     'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',
-    'WaitlistSignupView',
 ]

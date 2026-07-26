@@ -8,7 +8,7 @@ from ads.models import Banner
 from orders.models import Order, ReturnRequest
 from products.models import Category, Product, ProductImage, Variant
 
-from .models import SiteSettings, WaitlistSignup
+from .models import SiteSettings
 
 User = get_user_model()
 
@@ -149,16 +149,6 @@ class ReturnRequestStatusForm(forms.ModelForm):
         model = ReturnRequest
         fields = ('status', 'staff_notes')
         widgets = {'staff_notes': forms.Textarea(attrs={'rows': 3})}
-
-
-class WaitlistSignupForm(forms.ModelForm):
-    class Meta:
-        model = WaitlistSignup
-        fields = ('email', 'whatsapp_number')
-        widgets = {
-            'email': forms.EmailInput(attrs={'placeholder': 'you@example.com', 'required': True}),
-            'whatsapp_number': forms.TextInput(attrs={'placeholder': 'WhatsApp number (optional)'}),
-        }
 
 
 class DashboardReturnRequestForm(forms.ModelForm):

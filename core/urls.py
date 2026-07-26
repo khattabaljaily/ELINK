@@ -7,7 +7,6 @@ from rest_framework.routers import DefaultRouter
 
 from cart.api import CartAddItemView, CartDetailView, CartRemoveItemView, CartUpdateItemView
 from core.views import robots_txt
-from dashboard.views import WaitlistSignupView
 from products.api import CategoryViewSet, ProductViewSet
 from products.sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
 
@@ -32,7 +31,6 @@ sitemaps = {
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_urlpatterns)),
-    path('notify-me/', WaitlistSignupView.as_view(), name='waitlist-signup'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', robots_txt, name='robots'),
     path('accounts/', include('accounts.urls')),

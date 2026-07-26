@@ -4,7 +4,7 @@ from .models import SiteSettings
 
 ALLOWED_PREFIXES = (
     '/dashboard/', '/admin/', '/accounts/', '/static/', '/media/',
-    '/notify-me/', '/robots.txt', '/sitemap.xml',
+    '/robots.txt', '/sitemap.xml',
 )
 
 
