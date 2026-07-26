@@ -198,7 +198,11 @@
 
   async function submitModalForm(form) {
     const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
+    const originalLabel = submitBtn ? submitBtn.textContent : null;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+    }
 
     try {
       const res = await fetch(form.action || window.location.href, {
@@ -219,6 +223,11 @@
           modalBody.innerHTML = `<p class="form-errors">${data.error || 'Something went wrong.'}</p>
             <div class="form-actions"><button type="button" class="btn btn-outline" data-modal-close>Close</button></div>`;
         }
+      } else if (res.status >= 500) {
+        // A genuine server error, not a validation re-render — surface it
+        // instead of silently dumping a debug page into the modal.
+        modalBody.innerHTML = `<p class="form-errors">Something went wrong on the server (error ${res.status}). Please try again.</p>
+          <div class="form-actions"><button type="button" class="btn btn-outline" data-modal-close>Close</button></div>`;
       } else {
         // Form re-rendered with validation errors
         modalBody.innerHTML = await res.text();
@@ -226,7 +235,10 @@
     } catch (err) {
       modalBody.innerHTML = '<p class="form-errors">Something went wrong. Please try again.</p>';
     } finally {
-      if (submitBtn) submitBtn.disabled = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
     }
   }
 

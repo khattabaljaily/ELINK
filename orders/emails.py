@@ -1,4 +1,5 @@
 import logging
+import threading
 from email.mime.image import MIMEImage
 
 from django.conf import settings
@@ -50,20 +51,25 @@ def _send(request, template_prefix, subject, to_email, context):
     html_body = render_to_string(f'emails/{template_prefix}.html', context)
     text_body = render_to_string(f'emails/{template_prefix}.txt', context)
 
-    try:
-        message = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [to_email])
-        message.attach_alternative(html_body, 'text/html')
+    message = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [to_email])
+    message.attach_alternative(html_body, 'text/html')
 
-        if _LOGO_BYTES is not None:
-            message.mixed_subtype = 'related'
-            logo = MIMEImage(_LOGO_BYTES)
-            logo.add_header('Content-ID', f'<{LOGO_CID}>')
-            logo.add_header('Content-Disposition', 'inline', filename='logo.png')
-            message.attach(logo)
+    if _LOGO_BYTES is not None:
+        message.mixed_subtype = 'related'
+        logo = MIMEImage(_LOGO_BYTES)
+        logo.add_header('Content-ID', f'<{LOGO_CID}>')
+        logo.add_header('Content-Disposition', 'inline', filename='logo.png')
+        message.attach(logo)
 
-        message.send()
-    except Exception:
-        logger.exception('Failed to send "%s" email to %s', template_prefix, to_email)
+    def _deliver():
+        try:
+            message.send()
+        except Exception:
+            logger.exception('Failed to send "%s" email to %s', template_prefix, to_email)
+
+    # SMTP delivery can block for seconds (or hang) on a slow/unreachable mail
+    # server; run it off the request thread so it never delays the HTTP response.
+    threading.Thread(target=_deliver, daemon=True).start()
 
 
 def send_order_confirmation(request, order):
