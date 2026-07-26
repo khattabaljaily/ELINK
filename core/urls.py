@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from cart.api import CartAddItemView, CartDetailView, CartRemoveItemView, CartUpdateItemView
+from core.views import robots_txt
+from dashboard.views import WaitlistSignupView
 from products.api import CategoryViewSet, ProductViewSet
+from products.sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
 
 router = DefaultRouter()
 router.register('products', ProductViewSet, basename='product')
@@ -19,9 +23,18 @@ api_urlpatterns = [
     path('cart/items/<int:item_id>/remove/', CartRemoveItemView.as_view(), name='api-cart-remove'),
 ]
 
+sitemaps = {
+    'products': ProductSitemap,
+    'categories': CategorySitemap,
+    'static': StaticViewSitemap,
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_urlpatterns)),
+    path('notify-me/', WaitlistSignupView.as_view(), name='waitlist-signup'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
+    path('robots.txt', robots_txt, name='robots'),
     path('accounts/', include('accounts.urls')),
     path('cart/', include('cart.urls')),
     path('orders/', include('orders.urls')),

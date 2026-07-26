@@ -7,11 +7,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}E LINK{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}Shop everything you need at E LINK — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+
+  <meta property="og:site_name" content="E LINK">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}E LINK{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Shop everything you need at E LINK — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:image" content="{% block og_image %}{% static 'img/logo/765824.png' %}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="icon" href="{% static 'img/logo/765824.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static_versioned 'css/style.css' %}">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "E LINK",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/",
+    "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo/765824.png' %}"
+  }
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>

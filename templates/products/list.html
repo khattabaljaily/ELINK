@@ -5,6 +5,8 @@
 {% block title %}{% if category %}{{ category.name }}{% else %}Shop{% endif %} · E LINK{% endblock %}
 
 {% block meta_description %}{% if category %}{% if category.description %}{{ category.description }}{% else %}Shop {{ category.name }} at E LINK — cash on delivery, card, or digital wallet checkout.{% endif %}{% elif search_query %}Search results for "{{ search_query }}" at E LINK.{% else %}Shop the full E LINK catalog — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endif %}{% endblock %}
+{% block og_title %}{% if category %}{{ category.name }}{% else %}Shop{% endif %} · E LINK{% endblock %}
+{% block og_description %}{% if category %}{% if category.description %}{{ category.description }}{% else %}Shop {{ category.name }} at E LINK — cash on delivery, card, or digital wallet checkout.{% endif %}{% elif search_query %}Search results for "{{ search_query }}" at E LINK.{% else %}Shop the full E LINK catalog — electronics, apparel, home, beauty and more, with cash on delivery, card, or digital wallet checkout.{% endif %}{% endblock %}
 
 {% block content %}
   {% if not category and not search_query %}

@@ -2,6 +2,32 @@
 {% load price_tags %}
 
 {% block title %}{{ product.name }} · E LINK{% endblock %}
+{% block meta_description %}{% if product.description %}{{ product.description|truncatechars:155 }}{% else %}{{ product.name }} — available now at E LINK, delivered across Qatar with cash on delivery available.{% endif %}{% endblock %}
+{% block og_title %}{{ product.name }} · E LINK{% endblock %}
+{% block og_description %}{% if product.description %}{{ product.description|truncatechars:155 }}{% else %}{{ product.name }} — available now at E LINK, delivered across Qatar with cash on delivery available.{% endif %}{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_image %}{% if product.main_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ product.name|escapejs }}",
+    "description": "{{ product.description|default:product.name|escapejs }}",
+    "sku": "{{ product.slug|escapejs }}",
+    "category": "{{ product.category.name|escapejs }}",
+    {% if product.main_image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.image.url }}",{% endif %}
+    "offers": {
+      "@type": "Offer",
+      "url": "{{ request.build_absolute_uri }}",
+      "priceCurrency": "QAR",
+      "price": "{{ product.price }}",
+      "availability": "{% if product.total_stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+    }
+  }
+  </script>
+{% endblock %}
 
 {% block content %}
   <div class="page">
@@ -11,7 +37,7 @@
           {% if images %}
             <div class="product-gallery" id="product-gallery">
               <div class="product-gallery__main" id="gallery-main" data-lightbox-open>
-                <img src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" id="gallery-main-image">
+                <img src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" id="gallery-main-image" fetchpriority="high">
                 <span class="product-gallery__main-zoom">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path><path d="M11 8v6M8 11h6"></path></svg>
                 </span>
@@ -21,7 +47,7 @@
                   {% for image in images %}
                     <button type="button" class="product-gallery__thumb{% if forloop.first %} is-active{% endif %}"
                       data-full="{{ image.image.url }}" data-alt="{{ image.alt_text|default:product.name }}">
-                      <img src="{{ image.image.url }}" alt="">
+                      <img src="{{ image.image.url }}" alt="" loading="lazy" decoding="async">
                     </button>
                   {% endfor %}
                 </div>

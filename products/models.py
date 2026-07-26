@@ -1,6 +1,33 @@
+from io import BytesIO
+
+from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from PIL import Image, ImageOps
+
+PRODUCT_IMAGE_MAX_DIMENSION = 1600
+
+
+def optimize_product_image(image_field):
+    """Downscale + recompress an uploaded image, preserving transparency where present."""
+    img = Image.open(image_field)
+    img = ImageOps.exif_transpose(img)
+    has_alpha = img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info)
+
+    img.thumbnail((PRODUCT_IMAGE_MAX_DIMENSION, PRODUCT_IMAGE_MAX_DIMENSION), Image.LANCZOS)
+
+    buffer = BytesIO()
+    if has_alpha:
+        img.convert('RGBA').save(buffer, format='PNG', optimize=True)
+        ext, content_type = 'png', 'image/png'
+    else:
+        img.convert('RGB').save(buffer, format='JPEG', quality=82, optimize=True)
+        ext, content_type = 'jpg', 'image/jpeg'
+    buffer.seek(0)
+
+    name = f'{image_field.name.rsplit(".", 1)[0]}.{ext}'
+    return InMemoryUploadedFile(buffer, 'ImageField', name, content_type, buffer.getbuffer().nbytes, None)
 
 
 class Category(models.Model):
@@ -77,6 +104,11 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f'{self.product.name} image'
+
+    def save(self, *args, **kwargs):
+        if self.image and isinstance(self.image.file, UploadedFile):
+            self.image = optimize_product_image(self.image)
+        super().save(*args, **kwargs)
 
 
 class Variant(models.Model):

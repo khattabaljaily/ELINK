@@ -2,7 +2,10 @@ from django.shortcuts import render
 
 from .models import SiteSettings
 
-ALLOWED_PREFIXES = ('/dashboard/', '/admin/', '/accounts/', '/static/', '/media/')
+ALLOWED_PREFIXES = (
+    '/dashboard/', '/admin/', '/accounts/', '/static/', '/media/',
+    '/notify-me/', '/robots.txt', '/sitemap.xml',
+)
 
 
 class ComingSoonMiddleware:
