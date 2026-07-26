@@ -109,6 +109,8 @@
     </div>
   </div>
 
+  {% include 'partials/spinner.html' %}
+  <script src="{% static_versioned 'js/spinner.js' %}"></script>
   <script src="{% static_versioned 'js/dashboard.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
 </body>

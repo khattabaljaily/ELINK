@@ -160,9 +160,11 @@
   </footer>
 
   <div id="toast"></div>
+  {% include 'partials/spinner.html' %}
   <script>
     const CSRF_TOKEN = '{{ csrf_token }}';
   </script>
+  <script src="{% static_versioned 'js/spinner.js' %}"></script>
   <script src="{% static_versioned 'js/cart.js' %}"></script>
   <script src="{% static_versioned 'js/nav.js' %}"></script>
   {% block extra_scripts %}{% endblock %}

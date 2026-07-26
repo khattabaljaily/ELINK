@@ -1,0 +1,58 @@
+{% load static %}
+<div id="elink-loader" class="elink-loader" aria-hidden="true">
+  <div class="elink-loader__ring">
+    <div class="elink-loader__inner">
+      <img src="{% static 'img/logo/765824.png' %}" alt="" class="elink-loader__logo">
+    </div>
+  </div>
+</div>
+<style>
+  .elink-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 40, 61, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease;
+  }
+  .elink-loader.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  .elink-loader__ring {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(from 0deg, #0fb07e, #fcb503, #29c94f, #0fb07e);
+    padding: 4px;
+    animation: elink-loader-spin 1s linear infinite;
+  }
+  .elink-loader__inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #06283d;
+    display: grid;
+    place-items: center;
+  }
+  .elink-loader__logo {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    animation: elink-loader-spin-reverse 1s linear infinite;
+  }
+  @keyframes elink-loader-spin { to { transform: rotate(360deg); } }
+  @keyframes elink-loader-spin-reverse { to { transform: rotate(-360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .elink-loader__ring, .elink-loader__logo { animation: none; }
+  }
+</style>
