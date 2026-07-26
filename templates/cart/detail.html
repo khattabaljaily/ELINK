@@ -130,7 +130,7 @@
     }
 
     function updateRow(itemId, data) {
-      const item = data.items.find(i => i.id === itemId);
+      const item = data.items.find(i => String(i.id) === itemId);
       const row = table.querySelector(`tr[data-item-id="${itemId}"]`);
       if (item && row) {
         row.querySelector('.cart-item__subtotal').textContent = `QAR ${window.ELinkCart.formatPrice(item.subtotal)}`;
