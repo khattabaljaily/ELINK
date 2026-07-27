@@ -34,6 +34,7 @@
     const form = e.target;
     if (!(form instanceof HTMLFormElement)) return;
     if (form.closest('#modal-body') || form.closest('[data-no-spinner]')) return;
+    if (form.hasAttribute('data-confirm-submit') && form.dataset.confirmed !== 'true') return;
 
     show();
   });

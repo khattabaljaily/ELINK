@@ -31,7 +31,9 @@
 
               {% if order.is_cancellable %}
                 <form method="post" action="{% url 'orders:cancel' order.id %}"
-                  onsubmit="return confirm('Cancel order #{{ order.id }}? This can\'t be undone.');">
+                  data-confirm-submit data-confirm-title="Cancel order?"
+                  data-confirm-message="Cancel order #{{ order.id }}? This can't be undone."
+                  data-confirm-label="Yes, cancel it">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-outline btn-sm">Cancel order</button>
                 </form>
