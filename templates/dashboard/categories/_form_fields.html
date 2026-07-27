@@ -1,4 +1,4 @@
-<form method="post" action="{{ request.path }}">
+<form method="post" action="{{ request.path }}" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="form-group">
     <label for="{{ form.name.id_for_label }}">Name</label>
@@ -8,6 +8,14 @@
   <div class="form-group">
     <label for="{{ form.description.id_for_label }}">Description</label>
     {{ form.description }}
+  </div>
+  <div class="form-group">
+    <label for="{{ form.image.id_for_label }}">Tile image</label>
+    {% if form.instance.image %}
+      <img src="{{ form.instance.image.url }}" alt="" style="height:60px;width:60px;border-radius:50%;object-fit:cover;margin-bottom:8px;display:block;">
+    {% endif %}
+    {{ form.image }}
+    <span class="helptext">Shown as a round tile on the homepage. Leave blank to show the category's initial instead.</span>
   </div>
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Save category</button>

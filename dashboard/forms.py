@@ -65,7 +65,7 @@ VariantFormSet = forms.inlineformset_factory(
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'image')
 
     def clean_name(self):
         name = self.cleaned_data['name']

@@ -35,6 +35,23 @@
         {% include "ads/_banner.html" with banner=banners.homepage_2 variant="compact" width=600 height=130 %}
       </div>
     {% endif %}
+
+    {% if categories %}
+      <nav class="category-tiles" aria-label="Shop by category">
+        {% for c in categories %}
+          <a href="{{ c.get_absolute_url }}" class="category-tile">
+            <span class="category-tile__image">
+              {% if c.image %}
+                <img src="{{ c.image.url }}" alt="" loading="lazy">
+              {% else %}
+                <span class="category-tile__initial">{{ c.name|slice:":1" }}</span>
+              {% endif %}
+            </span>
+            <span class="category-tile__label">{{ c.name }}</span>
+          </a>
+        {% endfor %}
+      </nav>
+    {% endif %}
   {% endif %}
 
   <div class="page" id="catalog">

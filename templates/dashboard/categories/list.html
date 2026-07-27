@@ -15,11 +15,18 @@
     <div class="dash-table-wrap">
       <table class="dash-table" id="categories-table">
         <thead>
-          <tr><th>Name</th><th>Products</th><th class="no-sort"></th></tr>
+          <tr><th class="no-sort">Tile</th><th>Name</th><th>Products</th><th class="no-sort"></th></tr>
         </thead>
         <tbody>
           {% for category in categories %}
             <tr>
+              <td class="no-sort" data-label="Tile">
+                {% if category.image %}
+                  <img src="{{ category.image.url }}" alt="" style="height:36px;width:36px;border-radius:50%;object-fit:cover;">
+                {% else %}
+                  <div style="height:36px;width:36px;border-radius:50%;background:var(--color-bg);"></div>
+                {% endif %}
+              </td>
               <td data-label="Name">{{ category.name }}</td>
               <td data-label="Products">{{ category.products.count }}</td>
               <td class="card-actions">
