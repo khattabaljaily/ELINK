@@ -1,0 +1,8 @@
+Hi {{ user.get_full_name|default:user.username }},
+
+Thanks for creating an E LINK account. Please confirm your email address to finish setting up your account.
+
+Verify your email: {{ verify_url }}
+
+Questions? Contact support@elinkonline.com
+E LINK · Qatar

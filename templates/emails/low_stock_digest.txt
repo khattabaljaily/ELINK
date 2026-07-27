@@ -1,0 +1,6 @@
+{{ variants|length }} item(s) running low
+
+The following variants are at or below the low-stock threshold:
+{% for variant in variants %}- {{ variant.product.name }}{% if variant.size or variant.color %} ({{ variant.size }}{% if variant.size and variant.color %} / {% endif %}{{ variant.color }}){% endif %} — {{ variant.stock }} left
+{% endfor %}
+Manage products: {{ dashboard_url }}

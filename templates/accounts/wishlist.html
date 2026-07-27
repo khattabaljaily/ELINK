@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist · E LINK{% endblock %}
+
+{% block content %}
+  <div class="page">
+    <div class="page-hero">
+      <span class="page-hero__eyebrow">Account</span>
+      <h1>My Wishlist</h1>
+      <p>Products you've saved for later.</p>
+    </div>
+
+    {% if wishlist_items %}
+      <div class="product-grid">
+        {% for item in wishlist_items %}
+          {% with product=item.product %}
+            {% include "products/_product_card.html" %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>Your wishlist is empty. Browse products and tap the heart icon to save them here.</p>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">Shop now</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

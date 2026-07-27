@@ -15,7 +15,7 @@
     <div class="dash-table-wrap">
       <table class="dash-table" id="banners-table">
         <thead>
-          <tr><th>Preview</th><th>Name</th><th>Placement</th><th>Order</th><th>Status</th><th class="no-sort"></th></tr>
+          <tr><th>Preview</th><th>Name</th><th>Placement</th><th>Order</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Status</th><th class="no-sort"></th></tr>
         </thead>
         <tbody>
           {% for banner in banners %}
@@ -24,6 +24,9 @@
               <td data-label="Name" class="wrap">{{ banner.name }}</td>
               <td data-label="Placement">{{ banner.get_placement_display }}</td>
               <td data-label="Order">{{ banner.order }}</td>
+              <td data-label="Impressions">{{ banner.impressions }}</td>
+              <td data-label="Clicks">{{ banner.clicks }}</td>
+              <td data-label="CTR">{{ banner.ctr|floatformat:1 }}%</td>
               <td data-label="Status">
                 {% if banner.is_active %}
                   <span class="badge badge-active">Active</span>

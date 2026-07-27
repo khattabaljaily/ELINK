@@ -1,0 +1,5 @@
+Good news!
+
+{{ product.name }}{% if variant.size or variant.color %} ({{ variant.size }}{% if variant.size and variant.color %} / {% endif %}{{ variant.color }}){% endif %} is back in stock. Grab it before it sells out again.
+
+Shop now: {{ product_url }}

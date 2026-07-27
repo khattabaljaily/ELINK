@@ -12,7 +12,7 @@ from .employees import (
 from .home import DashboardHomeView
 from .orders import OrderDeleteView, OrderDetailView, OrderListView
 from .products import ProductDeleteView, ProductFormView, ProductListView
-from .reports import ReportsView
+from .reports import ReportsExportView, ReportsView
 from .returns import ReturnRequestCreateView, ReturnRequestDetailView, ReturnRequestListView
 from .reviews import ReviewDetailView, ReviewListView
 from .settings import SiteSettingsView
@@ -24,7 +24,7 @@ __all__ = [
     'OrderListView', 'OrderDetailView', 'OrderDeleteView',
     'ReturnRequestListView', 'ReturnRequestDetailView', 'ReturnRequestCreateView',
     'EmployeeListView', 'EmployeeCreateView', 'EmployeeUpdateView', 'EmployeeToggleActiveView', 'EmployeeSetPasswordView',
-    'ReportsView',
+    'ReportsView', 'ReportsExportView',
     'SiteSettingsView',
     'CustomerListView', 'CustomerDetailView',
     'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',

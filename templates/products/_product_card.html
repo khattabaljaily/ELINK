@@ -9,6 +9,16 @@
       {% endif %}
       {% if not variant %}<span class="product-card__ribbon">Out of stock</span>{% endif %}
     </a>
+    {% if user.is_authenticated %}
+      <button type="button" class="product-card__wishlist{% if product.id in wishlist_product_ids %} is-active{% endif %}"
+        data-wishlist-toggle data-url="{% url 'products:toggle_wishlist' product.slug %}" aria-label="Toggle wishlist">
+        <svg viewBox="0 0 24 24" fill="{% if product.id in wishlist_product_ids %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    {% else %}
+      <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="product-card__wishlist" aria-label="Log in to save to wishlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
+    {% endif %}
     <div class="product-card__body">
       <a href="{{ product.get_absolute_url }}" class="product-card__link">
         <span class="product-card__name">{{ product.name }}</span>

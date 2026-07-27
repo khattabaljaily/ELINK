@@ -72,6 +72,22 @@ def _send(request, template_prefix, subject, to_email, context):
     threading.Thread(target=_deliver, daemon=True).start()
 
 
+def send_new_order_admin_alert(request, order):
+    order_url = request.build_absolute_uri(reverse('dashboard:order_detail', args=[order.pk]))
+
+    for _, admin_email in settings.ADMINS:
+        _send(
+            request, 'new_order_admin_alert',
+            subject=f'New order #{order.id} — QAR {order.total} — E LINK',
+            to_email=admin_email,
+            context={
+                'order': order,
+                'items': order.items.select_related('variant').all(),
+                'order_url': order_url,
+            },
+        )
+
+
 def send_order_confirmation(request, order):
     order_url = request.build_absolute_uri(reverse('orders:detail', args=[order.guest_token]))
     gateway = get_gateway(order.payment.gateway) if hasattr(order, 'payment') else None

@@ -80,7 +80,11 @@ class CategoryForm(forms.ModelForm):
 class OrderStatusForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ('status',)
+        fields = ('status', 'tracking_carrier', 'tracking_number')
+        widgets = {
+            'tracking_carrier': forms.TextInput(attrs={'placeholder': 'e.g. Aramex, Qatar Post'}),
+            'tracking_number': forms.TextInput(attrs={'placeholder': 'Tracking number'}),
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)

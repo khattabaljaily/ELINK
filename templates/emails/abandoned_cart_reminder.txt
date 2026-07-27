@@ -1,0 +1,7 @@
+Hi {{ user.get_full_name|default:user.username }},
+
+You left a few items in your cart. They're still saved and ready when you are.
+
+{% for item in items %}- {{ item.variant.product.name }}{% if item.variant.size or item.variant.color %} ({{ item.variant.size }}{% if item.variant.size and item.variant.color %} / {% endif %}{{ item.variant.color }}){% endif %} x{{ item.quantity }} — QAR {{ item.subtotal|floatformat:2 }}
+{% endfor %}
+Complete your order: {{ cart_url }}

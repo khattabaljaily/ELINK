@@ -3,14 +3,16 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Window
 from django.db.models.functions import RowNumber
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .filters import ProductFilter
-from .forms import ReviewForm
-from .models import Category, Product
+from .forms import ReviewForm, StockSubscriptionForm
+from .models import Category, Product, StockSubscription, Wishlist
 
 PRODUCTS_PER_PAGE = 24
 PRODUCTS_PER_ROW = 5
+RELATED_PRODUCTS_COUNT = 8
 
 
 def product_list(request, slug=None):
@@ -23,10 +25,15 @@ def product_list(request, slug=None):
     search_query = request.GET.get('q', '')
     is_filtered = bool(search_query or request.GET.get('min_price') or request.GET.get('max_price'))
 
+    wishlist_product_ids = set()
+    if request.user.is_authenticated:
+        wishlist_product_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     context = {
         'categories': Category.objects.all(),
         'category': category,
         'search_query': search_query,
+        'wishlist_product_ids': wishlist_product_ids,
     }
 
     if not category and not is_filtered:
@@ -95,13 +102,64 @@ def product_detail(request, slug):
         Product.objects.select_related('category').prefetch_related('images', 'variants'),
         slug=slug, is_active=True,
     )
+    in_wishlist = (
+        request.user.is_authenticated
+        and Wishlist.objects.filter(user=request.user, product=product).exists()
+    )
+
+    related_products = (
+        Product.objects.filter(category=product.category, is_active=True)
+        .exclude(pk=product.pk)
+        .select_related('category').prefetch_related('images', 'variants')
+        .order_by('-created_at')[:RELATED_PRODUCTS_COUNT]
+    )
+
+    wishlist_product_ids = set()
+    if request.user.is_authenticated:
+        wishlist_product_ids = set(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     return render(request, 'products/detail.html', {
         'product': product,
         'reviews': product.approved_reviews.select_related('user'),
         'rating_summary': product.rating_summary,
         'can_review': product.can_review(request.user),
         'has_reviewed': product.has_reviewed(request.user),
+        'in_wishlist': in_wishlist,
+        'related_products': related_products,
+        'wishlist_product_ids': wishlist_product_ids,
     })
+
+
+@login_required
+def toggle_wishlist(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+
+    if request.method == 'POST':
+        deleted, _ = Wishlist.objects.filter(user=request.user, product=product).delete()
+        if not deleted:
+            Wishlist.objects.create(user=request.user, product=product)
+
+    in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+    return JsonResponse({'in_wishlist': in_wishlist})
+
+
+def subscribe_stock(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+
+    if request.method == 'POST':
+        form = StockSubscriptionForm(request.POST)
+        if form.is_valid() and form.cleaned_data['variant'].product_id == product.id:
+            _, created = StockSubscription.objects.get_or_create(
+                variant=form.cleaned_data['variant'], email=form.cleaned_data['email'],
+            )
+            if created:
+                messages.success(request, "We'll email you as soon as it's back in stock.")
+            else:
+                messages.info(request, "You're already on the list for this item.")
+        else:
+            messages.error(request, 'Please enter a valid email address.')
+
+    return redirect(product.get_absolute_url())
 
 
 @login_required

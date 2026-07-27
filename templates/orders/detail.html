@@ -26,6 +26,12 @@
         <h2 style="font-size:1.05rem">Status</h2>
         <p><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></p>
 
+        {% if order.tracking_number %}
+          <p class="text-muted" style="margin-top:8px">
+            Tracking: <strong>{{ order.tracking_number }}</strong>{% if order.tracking_carrier %} via {{ order.tracking_carrier }}{% endif %}
+          </p>
+        {% endif %}
+
         {% if order.payment %}
           <h2 style="font-size:1.05rem;margin-top:20px">Payment</h2>
           <p class="text-muted">

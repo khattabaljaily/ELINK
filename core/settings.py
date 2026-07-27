@@ -13,6 +13,7 @@ with open(BASE_DIR / 'secrets.json') as secrets_file:
 SECRET_KEY = secrets['SECRET_KEY']
 DEBUG = secrets['DEBUG']
 ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
+SITE_URL = secrets.get('SITE_URL', 'https://elinkonline.com')
 
 # Obscured admin path. core.middleware.AdminAccessMiddleware also gates it
 # behind an existing superuser session, so even knowing this path doesn't

@@ -1,0 +1,15 @@
+New order #{{ order.id }}
+
+{{ order.full_name }} just placed an order for QAR {{ order.total|floatformat:2 }}.
+
+Items:
+{% for item in items %}- {{ item.product_name }}{% if item.variant_label %} ({{ item.variant_label }}){% endif %} x{{ item.quantity }} — QAR {{ item.subtotal|floatformat:2 }}
+{% endfor %}
+Total: QAR {{ order.total|floatformat:2 }}
+
+Shipping to:
+{{ order.full_name }}
+{{ order.address }}, {{ order.city }}
+{{ order.phone }}
+
+Open in dashboard: {{ order_url }}

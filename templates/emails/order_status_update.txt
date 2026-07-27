@@ -3,6 +3,8 @@ Hi {{ order.full_name }},
 {{ status_message }}
 
 Order #{{ order.id }} is now: {{ order.get_status_display }}
+{% if order.tracking_number %}Tracking: {{ order.tracking_number }}{% if order.tracking_carrier %} via {{ order.tracking_carrier }}{% endif %}
+{% endif %}
 
 View your order: {{ order_url }}
 

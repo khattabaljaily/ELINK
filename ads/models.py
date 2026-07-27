@@ -18,6 +18,8 @@ class Banner(models.Model):
         default=0,
         help_text='Lower numbers show first when more than one banner is active for the same placement.',
     )
+    impressions = models.PositiveIntegerField(default=0)
+    clicks = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -25,3 +27,7 @@ class Banner(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.get_placement_display()})'
+
+    @property
+    def ctr(self):
+        return (self.clicks / self.impressions * 100) if self.impressions else 0

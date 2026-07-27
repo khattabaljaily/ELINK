@@ -91,7 +91,23 @@
           <div class="detail-actions">
             <input type="number" class="qty-input" id="qty-input" value="1" min="1">
             <button type="button" class="btn btn-primary" id="add-to-cart-btn" data-add-to-cart>Add to cart</button>
+            {% if user.is_authenticated %}
+              <button type="button" class="btn btn-outline{% if in_wishlist %} is-active{% endif %}"
+                data-wishlist-toggle data-url="{% url 'products:toggle_wishlist' product.slug %}"
+                data-active-label="&#9829; Saved" data-inactive-label="&#9825; Save">
+                {% if in_wishlist %}&#9829; Saved{% else %}&#9825; Save{% endif %}
+              </button>
+            {% else %}
+              <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn btn-outline">&#9825; Save</a>
+            {% endif %}
           </div>
+
+          <form method="post" action="{% url 'products:notify_stock' product.slug %}" id="notify-stock-form" style="display:none; margin-top:12px; gap:8px;" class="detail-actions">
+            {% csrf_token %}
+            <input type="hidden" name="variant" id="notify-stock-variant" value="">
+            <input type="email" name="email" required placeholder="Your email" class="qty-input" style="width:auto; flex:1;">
+            <button type="submit" class="btn btn-outline">Notify me when back in stock</button>
+          </form>
         {% else %}
           <p class="text-muted">This product is currently unavailable.</p>
         {% endif %}
@@ -131,6 +147,17 @@
         <p class="text-muted">No reviews yet.</p>
       {% endif %}
     </div>
+
+    {% if related_products %}
+      <div class="related-products" style="margin-top:40px;">
+        <h2 class="section-title" style="font-size:1.15rem">You might also like</h2>
+        <div class="product-grid">
+          {% for product in related_products %}
+            {% include "products/_product_card.html" %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   </div>
 
   <div class="gallery-lightbox" id="gallery-lightbox">
@@ -147,6 +174,8 @@
     const select = document.getElementById('variant-select');
     const stockNote = document.getElementById('stock-note');
     const btn = document.getElementById('add-to-cart-btn');
+    const notifyForm = document.getElementById('notify-stock-form');
+    const notifyVariantInput = document.getElementById('notify-stock-variant');
 
     function updateStockNote() {
       if (!select) return;
@@ -156,10 +185,15 @@
         stockNote.textContent = stock <= 5 ? `Only ${stock} left in stock` : 'In stock';
         stockNote.className = 'stock-note in-stock';
         btn.disabled = false;
+        if (notifyForm) notifyForm.style.display = 'none';
       } else {
         stockNote.textContent = 'Out of stock';
         stockNote.className = 'stock-note out-of-stock';
         btn.disabled = true;
+        if (notifyForm) {
+          notifyForm.style.display = 'flex';
+          if (notifyVariantInput) notifyVariantInput.value = opt.value;
+        }
       }
     }
 

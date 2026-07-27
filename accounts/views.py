@@ -10,13 +10,27 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
+from django.http import Http404
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import CreateView
 
 from orders.models import Order
+from products.models import Wishlist
 
+from .emails import send_email_verification
 from .forms import AccountPasswordResetForm, EmailOrUsernameAuthenticationForm, ProfileForm, RegisterForm
+from .models import User
+from .tokens import email_verification_token
+from .twofactor import provisioning_uri, qr_data_uri, random_secret, verify_totp
+
+PENDING_2FA_SESSION_KEY = 'pending_2fa_user_id'
+PENDING_2FA_ATTEMPTS_KEY = 'pending_2fa_attempts'
+PENDING_TOTP_SECRET_SESSION_KEY = 'pending_totp_secret'
+MAX_2FA_ATTEMPTS = 5
 
 
 class AccountLoginView(LoginView):
@@ -29,9 +43,55 @@ class AccountLoginView(LoginView):
             return reverse_lazy('dashboard:home')
         return super().get_default_redirect_url()
 
+    def form_valid(self, form):
+        user = form.get_user()
+        if user.is_staff and user.totp_enabled:
+            self.request.session[PENDING_2FA_SESSION_KEY] = user.pk
+            return redirect('accounts:two_factor_verify')
+        return super().form_valid(form)
+
+
+def two_factor_verify(request):
+    user_id = request.session.get(PENDING_2FA_SESSION_KEY)
+    if not user_id:
+        return redirect('accounts:login')
+
+    try:
+        user = User.objects.get(pk=user_id, is_staff=True, totp_enabled=True)
+    except User.DoesNotExist:
+        request.session.pop(PENDING_2FA_SESSION_KEY, None)
+        return redirect('accounts:login')
+
+    if request.method == 'POST':
+        if verify_totp(user.totp_secret, request.POST.get('code', '')):
+            request.session.pop(PENDING_2FA_SESSION_KEY, None)
+            request.session.pop(PENDING_2FA_ATTEMPTS_KEY, None)
+            login(request, user, backend='accounts.backends.EmailOrUsernameBackend')
+            return redirect('dashboard:home')
+
+        attempts = request.session.get(PENDING_2FA_ATTEMPTS_KEY, 0) + 1
+        if attempts >= MAX_2FA_ATTEMPTS:
+            request.session.pop(PENDING_2FA_SESSION_KEY, None)
+            request.session.pop(PENDING_2FA_ATTEMPTS_KEY, None)
+            messages.error(request, 'Too many failed attempts. Please log in again.')
+            return redirect('accounts:login')
+        request.session[PENDING_2FA_ATTEMPTS_KEY] = attempts
+        messages.error(request, 'Invalid code. Please try again.')
+
+    return render(request, 'accounts/two_factor_verify.html', {})
+
 
 class AccountLogoutView(LogoutView):
     next_page = 'products:list'
+
+
+def _send_verification_email(request, user):
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = email_verification_token.make_token(user)
+    verify_url = request.build_absolute_uri(
+        reverse('accounts:verify_email', kwargs={'uidb64': uid, 'token': token}),
+    )
+    send_email_verification(user, verify_url)
 
 
 class RegisterView(CreateView):
@@ -41,8 +101,36 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        login(self.request, self.object)
+        login(self.request, self.object, backend='accounts.backends.EmailOrUsernameBackend')
+        _send_verification_email(self.request, self.object)
+        messages.info(self.request, "We've sent a verification link to your email.")
         return response
+
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and email_verification_token.check_token(user, token):
+        if not user.is_email_verified:
+            user.email_verified_at = timezone.now()
+            user.save(update_fields=['email_verified_at'])
+        messages.success(request, 'Your email has been verified.')
+    else:
+        messages.error(request, 'This verification link is invalid or has expired.')
+
+    return redirect('accounts:profile' if request.user.is_authenticated else 'accounts:login')
+
+
+@login_required
+def resend_verification(request):
+    if request.method == 'POST' and not request.user.is_email_verified:
+        _send_verification_email(request, request.user)
+        messages.success(request, 'Verification email sent.')
+    return redirect('accounts:profile')
 
 
 class AccountPasswordChangeView(PasswordChangeView):
@@ -90,6 +178,61 @@ def profile(request):
         form = ProfileForm(instance=request.user)
 
     return render(request, 'accounts/profile.html', {'form': form})
+
+
+@login_required
+def two_factor_setup(request):
+    if not request.user.is_staff:
+        raise Http404
+
+    if request.user.totp_enabled:
+        return redirect('accounts:profile')
+
+    secret = request.session.get(PENDING_TOTP_SECRET_SESSION_KEY)
+    if not secret:
+        secret = random_secret()
+        request.session[PENDING_TOTP_SECRET_SESSION_KEY] = secret
+
+    if request.method == 'POST':
+        if verify_totp(secret, request.POST.get('code', '')):
+            request.user.totp_secret = secret
+            request.user.totp_enabled = True
+            request.user.save(update_fields=['totp_secret', 'totp_enabled'])
+            request.session.pop(PENDING_TOTP_SECRET_SESSION_KEY, None)
+            messages.success(request, 'Two-factor authentication is now enabled.')
+            return redirect('accounts:profile')
+        messages.error(request, 'Invalid code. Please try again.')
+
+    return render(request, 'accounts/two_factor_setup.html', {
+        'qr_data_uri': qr_data_uri(provisioning_uri(request.user, secret)),
+        'secret': secret,
+    })
+
+
+@login_required
+def two_factor_disable(request):
+    if request.method == 'POST' and request.user.totp_enabled:
+        if verify_totp(request.user.totp_secret, request.POST.get('code', '')):
+            request.user.totp_secret = ''
+            request.user.totp_enabled = False
+            request.user.save(update_fields=['totp_secret', 'totp_enabled'])
+            messages.success(request, 'Two-factor authentication has been disabled.')
+        else:
+            messages.error(request, 'Invalid code.')
+    return redirect('accounts:profile')
+
+
+@login_required
+def my_wishlist(request):
+    items = list(
+        Wishlist.objects.filter(user=request.user).select_related('product').prefetch_related(
+            'product__images', 'product__variants',
+        ),
+    )
+    return render(request, 'accounts/wishlist.html', {
+        'wishlist_items': items,
+        'wishlist_product_ids': {item.product_id for item in items},
+    })
 
 
 @login_required

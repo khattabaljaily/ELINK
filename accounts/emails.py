@@ -54,3 +54,12 @@ def send_password_reset(user, reset_url):
         to_email=user.email,
         context={'user': user, 'reset_url': reset_url},
     )
+
+
+def send_email_verification(user, verify_url):
+    _send(
+        'verify_email',
+        subject='Verify your email — E LINK',
+        to_email=user.email,
+        context={'user': user, 'verify_url': verify_url},
+    )

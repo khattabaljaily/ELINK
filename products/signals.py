@@ -1,7 +1,10 @@
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from .models import ProductImage
+from .emails import send_back_in_stock
+from .models import ProductImage, Variant
+
+_previous_stock_by_pk = {}
 
 
 @receiver(post_delete, sender=ProductImage)
@@ -14,3 +17,27 @@ def delete_image_file(sender, instance, **kwargs):
     """
     if instance.image:
         instance.image.delete(save=False)
+
+
+@receiver(pre_save, sender=Variant)
+def _capture_previous_stock(sender, instance, **kwargs):
+    if instance.pk:
+        _previous_stock_by_pk[instance.pk] = (
+            Variant.objects.filter(pk=instance.pk).values_list('stock', flat=True).first()
+        )
+
+
+@receiver(post_save, sender=Variant)
+def notify_stock_subscribers(sender, instance, created, **kwargs):
+    """Email anyone waiting on a variant that just went from 0 to back in stock."""
+    if created:
+        return
+
+    previous_stock = _previous_stock_by_pk.pop(instance.pk, None)
+    if previous_stock != 0 or instance.stock <= 0:
+        return
+
+    subscriptions = list(instance.stock_subscriptions.all())
+    for subscription in subscriptions:
+        send_back_in_stock(subscription)
+    instance.stock_subscriptions.all().delete()

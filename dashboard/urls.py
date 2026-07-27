@@ -38,6 +38,7 @@ urlpatterns = [
     path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='customer_detail'),
 
     path('reports/', views.ReportsView.as_view(), name='reports'),
+    path('reports/export/', views.ReportsExportView.as_view(), name='reports_export'),
 
     path('banners/', views.BannerListView.as_view(), name='banner_list'),
     path('banners/add/', views.BannerCreateView.as_view(), name='banner_create'),

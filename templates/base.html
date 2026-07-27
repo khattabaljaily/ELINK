@@ -59,6 +59,7 @@
                 {% endif %}
                 <a href="{% url 'accounts:profile' %}">My account</a>
                 <a href="{% url 'accounts:orders' %}">My orders</a>
+                <a href="{% url 'accounts:wishlist' %}">Wishlist</a>
                 <form action="{% url 'accounts:logout' %}" method="post">
                   {% csrf_token %}
                   <button type="submit">Log out</button>
@@ -129,6 +130,7 @@
           {% if user.is_authenticated %}
             <a href="{% url 'accounts:profile' %}">My account</a>
             <a href="{% url 'accounts:orders' %}">My orders</a>
+            <a href="{% url 'accounts:wishlist' %}">Wishlist</a>
           {% else %}
             <a href="{% url 'accounts:login' %}">Log in</a>
             <a href="{% url 'accounts:register' %}">Sign up</a>
@@ -166,6 +168,7 @@
   </script>
   <script src="{% static_versioned 'js/spinner.js' %}"></script>
   <script src="{% static_versioned 'js/cart.js' %}"></script>
+  <script src="{% static_versioned 'js/wishlist.js' %}"></script>
   <script src="{% static_versioned 'js/nav.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
 </body>

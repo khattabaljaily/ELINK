@@ -8,7 +8,12 @@ from coupons.services import CouponError, calculate_discount, get_valid_coupon_f
 from payments.registry import get_gateway
 from products.models import Variant
 
-from .emails import send_order_confirmation, send_order_status_update, send_return_request_received
+from .emails import (
+    send_new_order_admin_alert,
+    send_order_confirmation,
+    send_order_status_update,
+    send_return_request_received,
+)
 from .forms import READY_PAYMENT_METHODS, CheckoutForm, ReturnRequestForm
 from .models import Order, OrderItem
 
@@ -89,6 +94,7 @@ def checkout(request):
                 return redirect('cart:detail')
 
             send_order_confirmation(request, order)
+            send_new_order_admin_alert(request, order)
             return redirect('orders:confirmation', token=order.guest_token)
     else:
         form = CheckoutForm(initial=initial)

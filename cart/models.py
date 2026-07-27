@@ -11,6 +11,7 @@ class Cart(models.Model):
     )
     session_key = models.CharField(max_length=40, unique=True, null=True, blank=True)
     coupon_code = models.CharField(max_length=32, blank=True)
+    abandoned_email_sent_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

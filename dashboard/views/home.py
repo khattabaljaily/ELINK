@@ -7,14 +7,13 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 
 from orders.models import Order, OrderItem
-from products.models import Product, Variant
+from products.models import LOW_STOCK_THRESHOLD, Product, Variant
 
 from ..permissions import StaffRequiredMixin
 
 User = get_user_model()
 
 CHART_DAYS = 14
-LOW_STOCK_THRESHOLD = 5
 
 
 class DashboardHomeView(StaffRequiredMixin, TemplateView):

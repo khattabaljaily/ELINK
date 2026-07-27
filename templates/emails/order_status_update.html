@@ -19,6 +19,9 @@
     <td style="padding:16px 20px;">
       <span style="font-size:13px; color:#62787a;">Order #{{ order.id }}</span><br>
       <span style="font-family:'Plus Jakarta Sans',Arial,sans-serif; font-weight:700; font-size:16px; color:{{ status_color }};">{{ order.get_status_display }}</span>
+      {% if order.tracking_number %}
+      <br><span style="font-size:13px; color:#62787a;">Tracking: {{ order.tracking_number }}{% if order.tracking_carrier %} via {{ order.tracking_carrier }}{% endif %}</span>
+      {% endif %}
     </td>
   </tr>
 </table>

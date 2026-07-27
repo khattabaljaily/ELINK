@@ -14,6 +14,7 @@
         <a href="?days={{ range }}" class="{% if days == range %}is-active{% endif %}">Last {{ range }} days</a>
       {% endfor %}
     </div>
+    <a href="{% url 'dashboard:reports_export' %}?days={{ days }}" class="btn btn-outline btn-sm">Export CSV</a>
   </div>
 
   <div class="kpi-grid">

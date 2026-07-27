@@ -43,6 +43,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', robots_txt, name='robots'),
     path('accounts/', include('accounts.urls')),
+    path('ads/', include('ads.urls')),
     path('cart/', include('cart.urls')),
     path('orders/', include('orders.urls')),
     path('dashboard/', include('dashboard.urls')),
