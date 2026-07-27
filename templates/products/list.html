@@ -42,15 +42,12 @@
       <h2 class="section-title" style="margin:0">
         {% if category %}{{ category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}
       </h2>
-      <div class="category-filter">
-        <label for="category-select" class="visually-hidden">Filter by category</label>
-        <select id="category-select" onchange="if(this.value) window.location = this.value;">
-          <option value="{% url 'products:list' %}" {% if not category %}selected{% endif %}>All categories</option>
-          {% for c in categories %}
-            <option value="{% url 'products:list_by_category' c.slug %}" {% if category.slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
+      <nav class="category-chips" aria-label="Filter by category">
+        <a href="{% url 'products:list' %}" class="category-chip{% if not category %} is-active{% endif %}">All categories</a>
+        {% for c in categories %}
+          <a href="{% url 'products:list_by_category' c.slug %}" class="category-chip{% if category.slug == c.slug %} is-active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </nav>
     </div>
 
     {% if sections %}

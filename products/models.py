@@ -1,3 +1,4 @@
+from datetime import timedelta
 from io import BytesIO
 
 from django.conf import settings
@@ -5,11 +6,13 @@ from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.db import models
 from django.db.models import Avg, Count
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from PIL import Image, ImageOps
 
 PRODUCT_IMAGE_MAX_DIMENSION = 1600
 LOW_STOCK_THRESHOLD = 5
+NEW_BADGE_DAYS = 14
 
 
 def optimize_product_image(image_field):
@@ -65,6 +68,7 @@ class Product(models.Model):
         help_text="Warranty period in months. Leave blank if this product carries no warranty.",
     )
     is_active = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False, help_text="Show a 'Bestseller' badge on this product.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -85,6 +89,10 @@ class Product(models.Model):
     @property
     def main_image(self):
         return self.images.first()
+
+    @property
+    def is_new(self):
+        return timezone.now() - self.created_at < timedelta(days=NEW_BADGE_DAYS)
 
     @property
     def total_stock(self):

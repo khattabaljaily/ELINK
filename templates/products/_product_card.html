@@ -7,7 +7,13 @@
       {% else %}
         <span class="product-card__placeholder">E LINK</span>
       {% endif %}
-      {% if not variant %}<span class="product-card__ribbon">Out of stock</span>{% endif %}
+      {% if not variant %}
+        <span class="product-card__ribbon">Out of stock</span>
+      {% elif product.is_featured %}
+        <span class="product-card__ribbon product-card__ribbon--featured">Bestseller</span>
+      {% elif product.is_new %}
+        <span class="product-card__ribbon product-card__ribbon--new">New</span>
+      {% endif %}
     </a>
     {% if user.is_authenticated %}
       <button type="button" class="product-card__wishlist{% if product.id in wishlist_product_ids %} is-active{% endif %}"

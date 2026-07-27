@@ -1059,25 +1059,45 @@ textarea:focus {
   flex-wrap: wrap;
 }
 
-.category-filter select {
-  width: auto;
-  min-width: 200px;
-  padding: 11px 40px 11px 18px;
+.category-chips {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 2px 6px;
+  max-width: 100%;
+}
+
+.category-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
   border-radius: 999px;
   border: 1.5px solid var(--color-border);
   background-color: var(--color-surface);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--color-navy);
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2362787a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
 }
 
-.category-filter select:hover {
+.category-chip:hover {
   border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.category-chip.is-active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: var(--color-text-inverse);
 }
 
 /* --------------------------------------------------------------------------
@@ -1256,6 +1276,16 @@ textarea:focus {
   padding: 6px 11px;
   border-radius: 999px;
   box-shadow: var(--shadow-sm);
+}
+
+.product-card__ribbon--featured {
+  background: var(--gradient-accent);
+  color: var(--color-navy);
+}
+
+.product-card__ribbon--new {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .product-card__body {
@@ -2506,12 +2536,7 @@ textarea:focus {
     align-items: stretch;
   }
 
-  .category-filter {
+  .category-chips {
     width: 100%;
-  }
-
-  .category-filter select {
-    width: 100%;
-    min-width: 0;
   }
 }
