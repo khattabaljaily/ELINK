@@ -1,14 +1,22 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import (
+    LoginView,
+    LogoutView,
+    PasswordChangeView,
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from orders.models import Order
 
-from .forms import EmailOrUsernameAuthenticationForm, ProfileForm, RegisterForm
+from .forms import AccountPasswordResetForm, EmailOrUsernameAuthenticationForm, ProfileForm, RegisterForm
 
 
 class AccountLoginView(LoginView):
@@ -45,6 +53,29 @@ class AccountPasswordChangeView(PasswordChangeView):
         response = super().form_valid(form)
         messages.success(self.request, 'Your password has been updated.')
         return response
+
+
+class AccountPasswordResetView(PasswordResetView):
+    template_name = 'accounts/password_reset.html'
+    form_class = AccountPasswordResetForm
+    success_url = reverse_lazy('accounts:password_reset_done')
+
+    def form_valid(self, form):
+        form.save(request=self.request)
+        return super(PasswordResetView, self).form_valid(form)
+
+
+class AccountPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'accounts/password_reset_done.html'
+
+
+class AccountPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'accounts/password_reset_confirm.html'
+    success_url = reverse_lazy('accounts:password_reset_complete')
+
+
+class AccountPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'accounts/password_reset_complete.html'
 
 
 @login_required

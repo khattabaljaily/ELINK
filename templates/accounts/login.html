@@ -18,6 +18,7 @@
       {% if form.non_field_errors %}
         <p class="form-errors">{{ form.non_field_errors }}</p>
       {% endif %}
+      <p class="auth-card__footer" style="margin:-4px 0 16px; text-align:right"><a href="{% url 'accounts:password_reset' %}">Forgot password?</a></p>
       <button type="submit" class="btn btn-primary btn-block">Log in</button>
     </form>
     <p class="auth-card__footer">Don't have an account? <a href="{% url 'accounts:register' %}">Sign up</a></p>

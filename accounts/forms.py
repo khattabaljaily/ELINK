@@ -1,7 +1,12 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
 
+from .emails import send_password_reset
 from .models import User
 
 
@@ -47,3 +52,14 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].label = 'Username or email'
         self.fields['username'].widget.attrs['placeholder'] = 'Username or email'
+
+
+class AccountPasswordResetForm(PasswordResetForm):
+    def save(self, request, **kwargs):
+        for user in self.get_users(self.cleaned_data['email']):
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_url = request.build_absolute_uri(
+                reverse('accounts:password_reset_confirm', kwargs={'uidb64': uid, 'token': token}),
+            )
+            send_password_reset(user, reset_url)
