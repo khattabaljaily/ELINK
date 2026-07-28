@@ -623,7 +623,7 @@ textarea:focus {
 .user-menu__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: none;
   border: none;
   font-family: inherit;
@@ -636,6 +636,25 @@ textarea:focus {
 
 .user-menu__trigger:hover {
   color: var(--color-navy);
+}
+
+.user-menu__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-menu__label {
+  flex: 1;
+  text-align: left;
 }
 
 .user-menu__chevron {
@@ -677,7 +696,9 @@ textarea:focus {
 
 .user-menu__panel a,
 .user-menu__panel button {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   text-align: left;
   padding: 9px 12px;
@@ -691,6 +712,14 @@ textarea:focus {
   cursor: pointer;
 }
 
+.user-menu__panel a svg,
+.user-menu__panel button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
 .user-menu__panel a:hover,
 .user-menu__panel button:hover {
   background: var(--color-bg);
@@ -698,6 +727,17 @@ textarea:focus {
 
 .user-menu__panel form {
   margin: 0;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--color-border);
+}
+
+.user-menu__panel form button {
+  color: var(--color-danger);
+}
+
+.user-menu__panel form button svg {
+  color: var(--color-danger);
 }
 
 .nav-toggle {
@@ -2452,52 +2492,83 @@ textarea:focus {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
-    gap: 18px;
+    gap: 4px;
     margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border);
   }
 
   .site-nav.is-open {
     display: flex;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 8px;
   }
 
   .main-nav {
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
   }
 
+  .main-nav a {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .main-nav a::after {
+    display: none;
+  }
+
+  .main-nav a:hover,
+  .main-nav a.is-active {
+    background: var(--color-bg);
+  }
+
   .header-actions {
-    justify-content: center;
+    justify-content: stretch;
     flex-wrap: wrap;
     margin-left: 0;
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .header-actions .btn {
+    flex: 1;
   }
 
   .user-menu {
     width: 100%;
-    text-align: center;
+    text-align: left;
   }
 
   .user-menu__trigger {
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
+    padding: 10px 12px;
   }
 
   .user-menu__panel {
     position: static;
+    display: none;
     opacity: 1;
     visibility: visible;
     transform: none;
     box-shadow: none;
     border: none;
-    padding: 8px 0 0;
-    margin-top: 4px;
-    align-items: center;
+    padding: 4px 0 0;
+    margin-top: 0;
+    align-items: stretch;
+  }
+
+  .user-menu.is-open .user-menu__panel {
+    display: flex;
   }
 
   .user-menu__panel a,
   .user-menu__panel button {
-    text-align: center;
+    text-align: left;
   }
 
   .hero__art {
