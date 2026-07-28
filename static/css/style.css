@@ -1216,36 +1216,26 @@ textarea:focus {
   align-items: center;
   justify-content: center;
   padding: 17px;
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #063d2c 100%);
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition), transform var(--transition);
 }
 
 .category-card:hover .category-card__image {
   box-shadow: var(--shadow-md);
-  transform: scale(1.05) rotate(-2deg);
+  transform: scale(1.06);
 }
-
-/* Cycle a distinct gradient per category, in DOM order. */
-.category-card:nth-of-type(8n + 1) .category-card__image { background: var(--gradient-primary); }
-.category-card:nth-of-type(8n + 2) .category-card__image { background: linear-gradient(135deg, #fcb503 0%, #ffcf47 100%); }
-.category-card:nth-of-type(8n + 3) .category-card__image { background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); }
-.category-card:nth-of-type(8n + 4) .category-card__image { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
-.category-card:nth-of-type(8n + 5) .category-card__image { background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); }
-.category-card:nth-of-type(8n + 6) .category-card__image { background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); }
-.category-card:nth-of-type(8n + 7) .category-card__image { background: var(--gradient-navy); }
-.category-card:nth-of-type(8n + 8) .category-card__image { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); }
 
 .category-card__icon {
   font-size: 1.7rem;
-  color: var(--color-text-inverse);
+  color: var(--color-accent);
 }
 
 .category-card__initial {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.5rem;
-  color: var(--color-text-inverse);
+  color: var(--color-accent);
 }
 
 .category-card__name {
