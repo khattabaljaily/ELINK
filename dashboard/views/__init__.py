@@ -10,6 +10,7 @@ from .employees import (
     EmployeeUpdateView,
 )
 from .home import DashboardHomeView
+from .marketing import MarketingEmailView
 from .orders import OrderDeleteView, OrderDetailView, OrderListView
 from .products import ProductDeleteView, ProductFormView, ProductListView
 from .reports import ReportsExportView, ReportsView
@@ -30,4 +31,5 @@ __all__ = [
     'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',
     'CouponListView', 'CouponCreateView', 'CouponUpdateView', 'CouponDeleteView',
     'ReviewListView', 'ReviewDetailView',
+    'MarketingEmailView',
 ]

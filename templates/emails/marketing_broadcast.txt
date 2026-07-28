@@ -1,0 +1,3 @@
+{% for paragraph in paragraphs %}{{ paragraph }}
+
+{% endfor %}Shop now: {{ shop_url }}

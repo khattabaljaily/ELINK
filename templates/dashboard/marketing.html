@@ -1,0 +1,38 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Marketing{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Marketing email</h1>
+      <p>Write a message and send it to every registered customer, using the same design as your order emails.</p>
+    </div>
+  </div>
+
+  <div class="dash-card" style="max-width:640px;">
+    <div class="dash-card__title">Compose broadcast</div>
+    <p class="text-muted" style="font-size:0.85rem;margin-top:-8px;margin-bottom:16px;">
+      Sent to every active customer account with an email on file. Separate paragraphs in the message with a blank line.
+    </p>
+    <form method="post" onsubmit="return confirm('Send this email to every registered customer? This can\'t be undone.');">
+      {% csrf_token %}
+      <div class="form-group full">
+        <label for="{{ form.subject.id_for_label }}">Subject</label>
+        {{ form.subject }}
+        {% if form.subject.errors %}
+          <p class="form-errors">{{ form.subject.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      <div class="form-group full">
+        <label for="{{ form.message.id_for_label }}">Message</label>
+        {{ form.message }}
+        {% if form.message.errors %}
+          <p class="form-errors">{{ form.message.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">Send to all customers</button>
+    </form>
+  </div>
+{% endblock %}

@@ -164,6 +164,14 @@ class CouponForm(forms.ModelForm):
         }
 
 
+class MarketingEmailForm(forms.Form):
+    subject = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'e.g. 20% off everything this weekend'}))
+    message = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': 10,
+        'placeholder': 'Write your message… separate paragraphs with a blank line.',
+    }))
+
+
 class ReturnRequestStatusForm(forms.ModelForm):
     class Meta:
         model = ReturnRequest

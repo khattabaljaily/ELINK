@@ -84,8 +84,7 @@ p { margin: 0 0 1em; }
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .dash-sidebar__brand {
@@ -93,6 +92,7 @@ p { margin: 0 0 1em; }
   align-items: center;
   gap: 10px;
   padding: 6px 10px 26px;
+  flex-shrink: 0;
 }
 
 .dash-sidebar__brand img { height: 30px; }
@@ -109,6 +109,9 @@ p { margin: 0 0 1em; }
   flex-direction: column;
   gap: 3px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dash-nav a {
@@ -145,6 +148,7 @@ p { margin: 0 0 1em; }
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 16px;
   margin-top: 10px;
+  flex-shrink: 0;
 }
 
 .dash-sidebar__footer a {

@@ -61,6 +61,9 @@
           <a href="{% url 'dashboard:coupon_list' %}" class="{% if 'coupon' in request.resolver_match.url_name %}is-active{% endif %}">
             <span class="dash-nav__icon">&#127991;</span> Coupons
           </a>
+          <a href="{% url 'dashboard:marketing' %}" class="{% if request.resolver_match.url_name == 'marketing' %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#128172;</span> Marketing
+          </a>
 
           <a href="{% url 'dashboard:settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}is-active{% endif %}">
             <span class="dash-nav__icon">&#9881;</span> Settings

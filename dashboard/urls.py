@@ -51,4 +51,6 @@ urlpatterns = [
     path('coupons/<int:pk>/delete/', views.CouponDeleteView.as_view(), name='coupon_delete'),
 
     path('settings/', views.SiteSettingsView.as_view(), name='settings'),
+
+    path('marketing/', views.MarketingEmailView.as_view(), name='marketing'),
 ]
