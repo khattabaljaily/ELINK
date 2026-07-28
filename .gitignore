@@ -15,3 +15,4 @@ secrets.json
 
 .DS_Store
 *.log
+*.sql
