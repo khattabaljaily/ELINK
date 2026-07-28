@@ -65,7 +65,7 @@ VariantFormSet = forms.inlineformset_factory(
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ('name', 'description', 'icon', 'image')
+        fields = ('name', 'description', 'icon')
         widgets = {
             'icon': forms.TextInput(attrs={'placeholder': 'e.g. shopping-bag'}),
         }

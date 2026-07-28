@@ -1,4 +1,4 @@
-<form method="post" action="{{ request.path }}" enctype="multipart/form-data">
+<form method="post" action="{{ request.path }}">
   {% csrf_token %}
   <div class="form-group">
     <label for="{{ form.name.id_for_label }}">Name</label>
@@ -18,16 +18,8 @@
     <span class="helptext">
       Font Awesome icon name, without the "fa-" prefix — e.g. "shopping-bag", "laptop", "shirt".
       Browse names at <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" rel="noopener">fontawesome.com/search</a>.
-      Takes priority over the tile image below.
+      Leave blank to show the category's initial instead.
     </span>
-  </div>
-  <div class="form-group">
-    <label for="{{ form.image.id_for_label }}">Tile image</label>
-    {% if form.instance.image %}
-      <img src="{{ form.instance.image.url }}" alt="" style="height:60px;width:60px;border-radius:50%;object-fit:cover;margin-bottom:8px;display:block;">
-    {% endif %}
-    {{ form.image }}
-    <span class="helptext">Used only if no icon is set above. Leave blank to show the category's initial instead.</span>
   </div>
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Save category</button>

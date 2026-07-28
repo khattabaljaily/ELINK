@@ -21,10 +21,12 @@
           {% for category in categories %}
             <tr>
               <td class="no-sort" data-label="Tile">
-                {% if category.image %}
-                  <img src="{{ category.image.url }}" alt="" style="height:36px;width:36px;border-radius:50%;object-fit:cover;">
+                {% if category.icon %}
+                  <span style="display:flex;align-items:center;justify-content:center;height:36px;width:36px;border-radius:10px;background:#e4f8f1;">
+                    <i class="fa-solid fa-{{ category.icon }}" style="font-size:16px;color:#29c94f;"></i>
+                  </span>
                 {% else %}
-                  <div style="height:36px;width:36px;border-radius:50%;background:var(--color-bg);"></div>
+                  <div style="height:36px;width:36px;border-radius:10px;background:var(--color-bg);"></div>
                 {% endif %}
               </td>
               <td data-label="Name">{{ category.name }}</td>
