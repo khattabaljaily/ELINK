@@ -1216,7 +1216,7 @@ textarea:focus {
   align-items: center;
   justify-content: center;
   padding: 17px;
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #063d2c 100%);
+  background: var(--gradient-navy);
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition), transform var(--transition);
 }
@@ -1227,14 +1227,14 @@ textarea:focus {
 }
 
 .category-card__icon {
-  font-size: 1.7rem;
+  font-size: 2rem;
   color: var(--color-accent);
 }
 
 .category-card__initial {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   color: var(--color-accent);
 }
 
@@ -1258,7 +1258,7 @@ textarea:focus {
   }
 
   .category-card__image { width: 100%; height: auto; aspect-ratio: 1 / 1; padding: 13px; border-radius: 18px; }
-  .category-card__icon { font-size: 1.3rem; }
+  .category-card__icon { font-size: 1.5rem; }
   .category-card__name { font-size: 0.74rem; }
 }
 
