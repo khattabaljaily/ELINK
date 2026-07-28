@@ -2836,8 +2836,7 @@ textarea:focus {
   }
 
   .pwa-install-banner__actions {
-    width: 100%;
-    justify-content: stretch;
+    width: calc(100% - 54px);
     margin-left: 54px;
   }
 
