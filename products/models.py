@@ -41,6 +41,11 @@ class Category(models.Model):
     slug = models.SlugField(max_length=140, unique=True, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    icon = models.CharField(
+        max_length=50, blank=True,
+        help_text='Font Awesome icon name, e.g. "shopping-bag" for the fa-shopping-bag icon. '
+                   'Takes priority over the tile image when set.',
+    )
 
     class Meta:
         verbose_name_plural = 'Categories'
