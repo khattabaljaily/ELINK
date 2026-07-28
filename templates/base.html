@@ -213,13 +213,6 @@
   <script src="{% static_versioned 'js/confirm-modal.js' %}"></script>
   <script src="{% static_versioned 'js/nav.js' %}"></script>
   <script src="{% static_versioned 'js/pwa-install.js' %}"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
-      });
-    }
-  </script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>

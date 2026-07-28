@@ -36,35 +36,50 @@
       </div>
     {% endif %}
 
+    {% if featured_products %}
+      <section class="featured-section">
+        <div class="featured-section__header">
+          <h2 class="featured-section__title"><span class="featured-section__icon">&#9733;</span> Bestsellers</h2>
+        </div>
+        <div class="product-grid">
+          {% for product in featured_products %}
+            {% include "products/_product_card.html" %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
     {% if categories %}
-      <nav class="category-tiles" aria-label="Shop by category">
+      <div class="category-cards">
         {% for c in categories %}
-          <a href="{{ c.get_absolute_url }}" class="category-tile">
-            <span class="category-tile__image">
+          <a href="{{ c.get_absolute_url }}" class="category-card">
+            <span class="category-card__image{% if not c.image %} category-card__image--fallback{% endif %}">
               {% if c.image %}
                 <img src="{{ c.image.url }}" alt="" loading="lazy">
               {% else %}
-                <span class="category-tile__initial">{{ c.name|slice:":1" }}</span>
+                <span class="category-card__initial">{{ c.name|slice:":1" }}</span>
               {% endif %}
             </span>
-            <span class="category-tile__label">{{ c.name }}</span>
+            <span class="category-card__name">{{ c.name }}</span>
           </a>
         {% endfor %}
-      </nav>
+      </div>
     {% endif %}
   {% endif %}
 
   <div class="page" id="catalog">
     <div class="filters-bar">
       <h2 class="section-title" style="margin:0">
-        {% if category %}{{ category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}
+        {% if category %}{{ category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}{% endif %}
       </h2>
-      <nav class="category-chips" aria-label="Filter by category">
-        <a href="{% url 'products:list' %}" class="category-chip{% if not category %} is-active{% endif %}">All categories</a>
-        {% for c in categories %}
-          <a href="{% url 'products:list_by_category' c.slug %}" class="category-chip{% if category.slug == c.slug %} is-active{% endif %}">{{ c.name }}</a>
-        {% endfor %}
-      </nav>
+      {% if category or search_query %}
+        <nav class="category-chips" aria-label="Filter by category">
+          <a href="{% url 'products:list' %}" class="category-chip{% if not category %} is-active{% endif %}">All categories</a>
+          {% for c in categories %}
+            <a href="{% url 'products:list_by_category' c.slug %}" class="category-chip{% if category.slug == c.slug %} is-active{% endif %}">{{ c.name }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
     </div>
 
     {% if sections %}

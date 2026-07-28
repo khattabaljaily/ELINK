@@ -13,6 +13,7 @@ from .models import Category, Product, StockSubscription, Wishlist
 PRODUCTS_PER_PAGE = 24
 PRODUCTS_PER_ROW = 5
 RELATED_PRODUCTS_COUNT = 8
+FEATURED_PRODUCTS_COUNT = 8
 
 
 def product_list(request, slug=None):
@@ -66,8 +67,13 @@ def product_list(request, slug=None):
             .annotate(product_count=Count('products')).values_list('id', 'product_count'),
         )
 
+        category_cards = list(context['categories'])
+        for cat in category_cards:
+            cat.product_count = counts.get(cat.id, 0)
+        context['categories'] = category_cards
+
         sections = []
-        for cat in context['categories']:
+        for cat in category_cards:
             cat_products = by_category.get(cat.id, [])
             if not cat_products:
                 continue
@@ -78,6 +84,11 @@ def product_list(request, slug=None):
                 'has_more': len(cat_products) > PRODUCTS_PER_ROW,
             })
         context['sections'] = sections
+        context['featured_products'] = (
+            Product.objects.filter(is_active=True, is_featured=True)
+            .select_related('category').prefetch_related('images', 'variants')
+            .order_by('-created_at')[:FEATURED_PRODUCTS_COUNT]
+        )
         return render(request, 'products/list.html', context)
 
     filtered = ProductFilter(request.GET, queryset=products)
