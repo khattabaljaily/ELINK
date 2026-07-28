@@ -13,7 +13,7 @@ from cart.api import (
     CartRemoveItemView,
     CartUpdateItemView,
 )
-from core.views import robots_txt
+from core.views import pwa_manifest, robots_txt, service_worker
 from products.api import CategoryViewSet, ProductViewSet
 from products.sitemaps import CategorySitemap, ProductSitemap, StaticViewSitemap
 
@@ -42,6 +42,8 @@ urlpatterns = [
     path('api/', include(api_urlpatterns)),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', robots_txt, name='robots'),
+    path('sw.js', service_worker, name='service_worker'),
+    path('manifest.json', pwa_manifest, name='pwa_manifest'),
     path('accounts/', include('accounts.urls')),
     path('ads/', include('ads.urls')),
     path('cart/', include('cart.urls')),
