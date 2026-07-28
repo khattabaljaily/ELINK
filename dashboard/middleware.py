@@ -5,7 +5,7 @@ from .models import SiteSettings
 
 ALLOWED_PREFIXES = (
     '/dashboard/', '/' + django_settings.ADMIN_URL, '/accounts/', '/static/', '/media/',
-    '/robots.txt', '/sitemap.xml',
+    '/robots.txt', '/sitemap.xml', '/sw.js', '/manifest.json',
 )
 
 
