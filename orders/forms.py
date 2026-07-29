@@ -5,18 +5,17 @@ from django.utils import timezone
 
 from .models import Order, ReturnRequest
 
-# Card/PayPal/wallet checkout isn't wired to a PCI-compliant payment gateway yet,
-# so the form only ever collects Cash on Delivery — no cardholder data touches
-# our server. Add the other methods here once a real gateway (e.g. Stripe
-# Elements, PayPal Checkout) is integrated.
+# Card payments go through MyFatoorah's hosted page — no cardholder data
+# touches our server. Wallet/PayPal aren't wired to a gateway yet; add them
+# here once one is integrated.
 PAYMENT_METHOD_CHOICES = [
     ('cod', 'Cash on Delivery'),
-    ('card', 'Card (Visa/Mastercard) — coming soon'),
+    ('card', 'Card (Visa/Mastercard)'),
     ('wallet', 'Apple Pay / Google Pay — coming soon'),
     ('paypal', 'PayPal — coming soon'),
 ]
 
-READY_PAYMENT_METHODS = {'cod'}
+READY_PAYMENT_METHODS = {'cod', 'card'}
 
 
 class CheckoutForm(forms.ModelForm):

@@ -19,6 +19,7 @@
         </thead>
         <tbody>
           {% for category in categories %}
+            {% with product_count=category.products.count %}
             <tr>
               <td class="no-sort" data-label="Tile">
                 {% if category.icon %}
@@ -30,7 +31,9 @@
                 {% endif %}
               </td>
               <td data-label="Name">{{ category.name }}</td>
-              <td data-label="Products">{{ category.products.count }}</td>
+              <td data-label="Products">
+                <a href="{% url 'dashboard:product_list' %}?category={{ category.slug }}" class="table-link">{{ product_count }} <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              </td>
               <td class="card-actions">
                 <div class="table-actions">
                   <button type="button" class="btn btn-outline btn-sm"
@@ -40,12 +43,18 @@
                       data-modal-confirm
                       data-modal-url="{% url 'dashboard:category_delete' category.pk %}"
                       data-modal-title="Delete category?"
-                      data-modal-message="Delete &quot;{{ category.name }}&quot;? This can&#39;t be undone."
-                      data-modal-confirm-label="Yes, delete">Delete</button>
+                      {% if product_count %}
+                        data-modal-message="&quot;{{ category.name }}&quot; still has {{ product_count }} product{{ product_count|pluralize }}. Move or delete them first &mdash; categories in use can&#39;t be removed."
+                        data-modal-confirm-label="OK"
+                      {% else %}
+                        data-modal-message="Delete &quot;{{ category.name }}&quot;? This can&#39;t be undone."
+                        data-modal-confirm-label="Yes, delete"
+                      {% endif %}>Delete</button>
                   {% endif %}
                 </div>
               </td>
             </tr>
+            {% endwith %}
           {% endfor %}
         </tbody>
       </table>

@@ -19,10 +19,23 @@
   <div class="dash-shell">
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
     <aside class="dash-sidebar" id="dash-sidebar">
-      <a href="{% url 'dashboard:home' %}" class="dash-sidebar__brand">
-        <img src="{% static 'img/logo/765824.png' %}" alt="E LINK">
-        <span>E LINK</span>
-      </a>
+      <div class="dash-sidebar__top">
+        <a href="{% url 'dashboard:home' %}" class="dash-sidebar__brand">
+          <img src="{% static 'img/logo/765824.png' %}" alt="E LINK">
+          <span>E LINK</span>
+        </a>
+        <div class="dash-sidebar__top-actions">
+          <a href="{% url 'products:list' %}" class="dash-sidebar__icon-link" title="View store" aria-label="View store">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <form action="{% url 'accounts:logout' %}" method="post" class="dash-sidebar__icon-form">
+            {% csrf_token %}
+            <button type="submit" class="dash-sidebar__icon-link" title="Log out" aria-label="Log out">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          </form>
+        </div>
+      </div>
 
       <nav class="dash-nav">
         <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">
@@ -71,14 +84,6 @@
           </a>
         {% endif %}
       </nav>
-
-      <div class="dash-sidebar__footer">
-        <a href="{% url 'products:list' %}">&larr; View store</a>
-        <form action="{% url 'accounts:logout' %}" method="post">
-          {% csrf_token %}
-          <button type="submit" style="all:unset;display:block;cursor:pointer;padding:9px 12px;border-radius:8px;font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.65);width:100%;">Log out</button>
-        </form>
-      </div>
     </aside>
 
     <div class="dash-main">

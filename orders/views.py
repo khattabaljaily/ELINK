@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -5,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from cart.utils import get_cart
 from coupons.services import CouponError, calculate_discount, get_valid_coupon_for_cart, redeem_coupon_for_order
+from payments.gateways import PaymentGatewayError
 from payments.registry import get_gateway
 from products.models import Variant
 
@@ -16,6 +19,8 @@ from .emails import (
 )
 from .forms import READY_PAYMENT_METHODS, CheckoutForm, ReturnRequestForm
 from .models import Order, OrderItem
+
+logger = logging.getLogger(__name__)
 
 
 class InsufficientStockError(Exception):
@@ -77,7 +82,7 @@ def checkout(request):
                         order.recalculate_total()
 
                     gateway = get_gateway(form.cleaned_data['payment_method'])
-                    gateway.initiate_payment(order)
+                    payment = gateway.initiate_payment(order)
 
                     cart.items.all().delete()
                     if cart.coupon_code:
@@ -92,6 +97,13 @@ def checkout(request):
             except CouponError as exc:
                 messages.error(request, exc.message)
                 return redirect('cart:detail')
+            except PaymentGatewayError:
+                logger.exception('Payment gateway error during checkout')
+                messages.error(request, "We couldn't start the payment. Please try again in a moment.")
+                return redirect('cart:detail')
+
+            if gateway.redirect_required:
+                return redirect(payment.redirect_url)
 
             send_order_confirmation(request, order)
             send_new_order_admin_alert(request, order)

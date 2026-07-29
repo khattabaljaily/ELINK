@@ -87,12 +87,20 @@ p { margin: 0 0 1em; }
   overflow: hidden;
 }
 
+.dash-sidebar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 26px 10px;
+  flex-shrink: 0;
+}
+
 .dash-sidebar__brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 10px 26px;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .dash-sidebar__brand img { height: 30px; }
@@ -102,6 +110,38 @@ p { margin: 0 0 1em; }
   font-weight: 800;
   color: var(--color-text-inverse);
   font-size: 1.05rem;
+}
+
+.dash-sidebar__top-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dash-sidebar__icon-form {
+  margin: 0;
+  display: contents;
+}
+
+.dash-sidebar__icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.dash-sidebar__icon-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-inverse);
 }
 
 .dash-nav {
@@ -142,27 +182,6 @@ p { margin: 0 0 1em; }
   text-align: center;
   font-weight: 800;
   opacity: 0.9;
-}
-
-.dash-sidebar__footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 16px;
-  margin-top: 10px;
-  flex-shrink: 0;
-}
-
-.dash-sidebar__footer a {
-  display: block;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.dash-sidebar__footer a:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-text-inverse);
 }
 
 .dash-main {
@@ -607,6 +626,10 @@ input[type="checkbox"] { width: auto; margin-right: 8px; }
 .dash-table tr:hover td { background: var(--color-bg); }
 
 .dash-table td.wrap { white-space: normal; overflow-wrap: anywhere; }
+
+.table-link { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
+.table-link:hover { text-decoration: underline; }
+.table-link i { font-size: 11px; opacity: .7; }
 
 .table-thumb {
   width: 36px;

@@ -15,6 +15,9 @@ DEBUG = secrets['DEBUG']
 ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
 SITE_URL = secrets.get('SITE_URL', 'https://elinkonline.com')
 
+MYFATOORAH_API_KEY = secrets['MYFATOORAH']['API_KEY']
+MYFATOORAH_BASE_URL = secrets['MYFATOORAH']['BASE_URL']
+
 # Obscured admin path. core.middleware.AdminAccessMiddleware also gates it
 # behind an existing superuser session, so even knowing this path doesn't
 # expose a login form to anonymous probing.

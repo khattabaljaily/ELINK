@@ -1,7 +1,8 @@
-from .gateways import CashOnDeliveryGateway
+from .gateways import CashOnDeliveryGateway, MyFatoorahGateway
 
 GATEWAYS = {
     CashOnDeliveryGateway.code: CashOnDeliveryGateway,
+    MyFatoorahGateway.code: MyFatoorahGateway,
 }
 
 DEFAULT_GATEWAY = CashOnDeliveryGateway.code
