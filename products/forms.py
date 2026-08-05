@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Review, Variant
+from .models import Review
 
 
 class ReviewForm(forms.ModelForm):
@@ -12,8 +12,3 @@ class ReviewForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'placeholder': 'Sum up your experience (optional)'}),
             'body': forms.Textarea(attrs={'rows': 4, 'placeholder': 'What did you like or dislike?'}),
         }
-
-
-class StockSubscriptionForm(forms.Form):
-    variant = forms.ModelChoiceField(queryset=Variant.objects.all(), widget=forms.HiddenInput())
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Your email'}))

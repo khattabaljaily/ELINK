@@ -1553,6 +1553,43 @@ textarea:focus {
   color: var(--color-danger);
 }
 
+.product-card__bell {
+  position: absolute;
+  top: 52px;
+  left: 12px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: color var(--transition), transform var(--transition);
+}
+
+.product-card__bell svg {
+  width: 18px;
+  height: 18px;
+}
+
+.product-card__bell:hover {
+  transform: scale(1.08);
+}
+
+.product-card__bell.is-subscribed {
+  color: var(--color-primary);
+  cursor: default;
+}
+
+.product-card__bell:disabled {
+  cursor: default;
+}
+
 .product-card:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-6px);

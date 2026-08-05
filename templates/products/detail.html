@@ -102,12 +102,13 @@
             {% endif %}
           </div>
 
-          <form method="post" action="{% url 'products:notify_stock' product.slug %}" id="notify-stock-form" style="display:none; margin-top:12px; gap:8px;" class="detail-actions">
-            {% csrf_token %}
-            <input type="hidden" name="variant" id="notify-stock-variant" value="">
-            <input type="email" name="email" required placeholder="Your email" class="qty-input" style="width:auto; flex:1;">
-            <button type="submit" class="btn btn-outline">Notify me when back in stock</button>
-          </form>
+          <div class="detail-actions" id="notify-stock-block" style="display:none; margin-top:12px;">
+            <button type="button" class="btn btn-outline" id="notify-stock-btn" data-notify-trigger
+              data-url="{% url 'products:notify_stock' product.slug %}" data-variant=""
+              data-label="Notify me when back in stock">
+              Notify me when back in stock
+            </button>
+          </div>
         {% else %}
           <p class="text-muted">This product is currently unavailable.</p>
         {% endif %}
@@ -174,25 +175,28 @@
     const select = document.getElementById('variant-select');
     const stockNote = document.getElementById('stock-note');
     const btn = document.getElementById('add-to-cart-btn');
-    const notifyForm = document.getElementById('notify-stock-form');
-    const notifyVariantInput = document.getElementById('notify-stock-variant');
+    const notifyBlock = document.getElementById('notify-stock-block');
+    const notifyBtn = document.getElementById('notify-stock-btn');
 
     function updateStockNote() {
       if (!select) return;
-      const opt = select.options[select.selectedIndex];
+      const opt = select.options[select.selectedIndex] || select.options[0];
+      if (!opt) return;
       const stock = parseInt(opt.dataset.stock, 10);
       if (stock > 0) {
         stockNote.textContent = stock <= 5 ? `Only ${stock} left in stock` : 'In stock';
         stockNote.className = 'stock-note in-stock';
         btn.disabled = false;
-        if (notifyForm) notifyForm.style.display = 'none';
+        if (notifyBlock) notifyBlock.style.display = 'none';
       } else {
         stockNote.textContent = 'Out of stock';
         stockNote.className = 'stock-note out-of-stock';
         btn.disabled = true;
-        if (notifyForm) {
-          notifyForm.style.display = 'flex';
-          if (notifyVariantInput) notifyVariantInput.value = opt.value;
+        if (notifyBlock) notifyBlock.style.display = 'flex';
+        if (notifyBtn) {
+          notifyBtn.dataset.variant = opt.value;
+          notifyBtn.disabled = false;
+          notifyBtn.textContent = notifyBtn.dataset.label;
         }
       }
     }

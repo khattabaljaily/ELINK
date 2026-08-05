@@ -1,13 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.core.validators import validate_email
 from django.db.models import Count, F, Window
 from django.db.models.functions import RowNumber
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .filters import ProductFilter
-from .forms import ReviewForm, StockSubscriptionForm
+from .forms import ReviewForm
 from .models import Category, Product, StockSubscription, Wishlist
 
 PRODUCTS_PER_PAGE = 24
@@ -156,21 +158,45 @@ def toggle_wishlist(request, slug):
 
 def subscribe_stock(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
-    if request.method == 'POST':
-        form = StockSubscriptionForm(request.POST)
-        if form.is_valid() and form.cleaned_data['variant'].product_id == product.id:
-            _, created = StockSubscription.objects.get_or_create(
-                variant=form.cleaned_data['variant'], email=form.cleaned_data['email'],
-            )
-            if created:
-                messages.success(request, "We'll email you as soon as it's back in stock.")
-            else:
-                messages.info(request, "You're already on the list for this item.")
-        else:
-            messages.error(request, 'Please enter a valid email address.')
+    def respond(success, message):
+        if is_ajax:
+            return JsonResponse({'success': success, 'message': message}, status=200 if success else 400)
+        messages.add_message(request, messages.SUCCESS if success else messages.ERROR, message)
+        return redirect(product.get_absolute_url())
 
-    return redirect(product.get_absolute_url())
+    if request.method != 'POST':
+        return redirect(product.get_absolute_url())
+
+    email = request.POST.get('email', '').strip()
+    if not email and request.user.is_authenticated:
+        email = request.user.email
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return respond(False, 'Please enter a valid email address.')
+
+    # A specific variant is passed from the product detail page (the option
+    # the shopper picked); the bell icon on product cards omits it, meaning
+    # "notify me for whichever of this product's variants comes back".
+    variants = product.variants.filter(stock=0)
+    variant_id = request.POST.get('variant')
+    if variant_id and variant_id.isdigit():
+        variants = variants.filter(pk=variant_id)
+
+    if not variants.exists():
+        return respond(False, 'That item is already in stock.')
+
+    created_any = False
+    for variant in variants:
+        _, created = StockSubscription.objects.get_or_create(variant=variant, email=email)
+        created_any = created_any or created
+
+    if created_any:
+        return respond(True, "We'll email you as soon as it's back in stock.")
+    return respond(True, "You're already on the list for this item.")
 
 
 @login_required
