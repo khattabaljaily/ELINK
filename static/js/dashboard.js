@@ -41,6 +41,37 @@
     return row;
   }
 
+  // Removing a formset row's DOM node isn't enough on its own: Django still
+  // expects TOTAL_FORMS worth of "prefix-N-" fields on submit. Leaving a gap
+  // makes it reconstruct a form for the missing index from blank/default
+  // values, which can look "changed" (e.g. a stock field defaulting to 0
+  // vs. a missing value) and fail required-field validation - the row then
+  // reappears on the re-rendered page with "This field is required".
+  // Renumbering the remaining rows keeps prefixes contiguous with
+  // TOTAL_FORMS so no such phantom form ever gets built.
+  function reindexFormset(prefix) {
+    const container = document.querySelector(`[data-formset="${prefix}"]`);
+    const totalForms = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+    if (!container || !totalForms) return;
+
+    const rows = Array.from(container.querySelectorAll('[data-formset-row]'));
+    const indexRe = new RegExp(`(${prefix}-)\\d+(-)`);
+    rows.forEach((row, index) => {
+      row.querySelectorAll('[name], [id], label[for]').forEach((el) => {
+        if (el.hasAttribute('name')) {
+          el.setAttribute('name', el.getAttribute('name').replace(indexRe, `$1${index}$2`));
+        }
+        if (el.hasAttribute('id')) {
+          el.setAttribute('id', el.getAttribute('id').replace(indexRe, `$1${index}$2`));
+        }
+        if (el.hasAttribute('for')) {
+          el.setAttribute('for', el.getAttribute('for').replace(indexRe, `$1${index}$2`));
+        }
+      });
+    });
+    totalForms.value = rows.length;
+  }
+
   document.addEventListener('click', (e) => {
     const addBtn = e.target.closest('[data-add-row]');
     if (addBtn) {
@@ -51,7 +82,9 @@
     const removeBtn = e.target.closest('[data-remove-row]');
     if (removeBtn) {
       const row = removeBtn.closest('[data-formset-row]');
+      const container = row ? row.closest('[data-formset]') : null;
       if (row) row.remove();
+      if (container) reindexFormset(container.dataset.formset);
     }
   });
 
