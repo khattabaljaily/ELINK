@@ -1,3 +1,4 @@
+from .analytics import VisitorAnalyticsView
 from .banners import BannerCreateView, BannerDeleteView, BannerListView, BannerUpdateView
 from .categories import CategoryCreateView, CategoryDeleteView, CategoryListView, CategoryUpdateView
 from .coupons import CouponCreateView, CouponDeleteView, CouponListView, CouponUpdateView
@@ -20,6 +21,7 @@ from .settings import SiteSettingsView
 
 __all__ = [
     'DashboardHomeView',
+    'VisitorAnalyticsView',
     'ProductListView', 'ProductFormView', 'ProductDeleteView',
     'CategoryListView', 'CategoryCreateView', 'CategoryUpdateView', 'CategoryDeleteView',
     'OrderListView', 'OrderDetailView', 'OrderDeleteView',

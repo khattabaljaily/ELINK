@@ -69,6 +69,9 @@
           <a href="{% url 'dashboard:reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128202;</span> Reports
           </a>
+          <a href="{% url 'dashboard:visitor_analytics' %}" class="{% if request.resolver_match.url_name == 'visitor_analytics' %}is-active{% endif %}">
+            <span class="dash-nav__icon">&#128200;</span> Visitors
+          </a>
           <a href="{% url 'dashboard:banner_list' %}" class="{% if 'banner' in request.resolver_match.url_name %}is-active{% endif %}">
             <span class="dash-nav__icon">&#128227;</span> Banners
           </a>

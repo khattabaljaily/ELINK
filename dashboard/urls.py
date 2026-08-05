@@ -39,6 +39,7 @@ urlpatterns = [
 
     path('reports/', views.ReportsView.as_view(), name='reports'),
     path('reports/export/', views.ReportsExportView.as_view(), name='reports_export'),
+    path('analytics/', views.VisitorAnalyticsView.as_view(), name='visitor_analytics'),
 
     path('banners/', views.BannerListView.as_view(), name='banner_list'),
     path('banners/add/', views.BannerCreateView.as_view(), name='banner_create'),

@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'dashboard.middleware.ComingSoonMiddleware',
+    'dashboard.middleware.VisitorTrackingMiddleware',
     'axes.middleware.AxesMiddleware',
 ]
 
