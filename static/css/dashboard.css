@@ -627,6 +627,14 @@ input[type="checkbox"] { width: auto; margin-right: 8px; }
 
 .dash-table td.wrap { white-space: normal; overflow-wrap: anywhere; }
 
+.dash-table tfoot td {
+  font-weight: 800;
+  color: var(--color-navy);
+  border-top: 2px solid var(--color-border);
+  border-bottom: none;
+  background: var(--color-bg);
+}
+
 .table-link { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
 .table-link:hover { text-decoration: underline; }
 .table-link i { font-size: 11px; opacity: .7; }

@@ -18,6 +18,7 @@ from .reports import ReportsExportView, ReportsView
 from .returns import ReturnRequestCreateView, ReturnRequestDetailView, ReturnRequestListView
 from .reviews import ReviewDetailView, ReviewListView
 from .settings import SiteSettingsView
+from .stock_value import StockValueReportView
 
 __all__ = [
     'DashboardHomeView',
@@ -29,6 +30,7 @@ __all__ = [
     'EmployeeListView', 'EmployeeCreateView', 'EmployeeUpdateView', 'EmployeeToggleActiveView', 'EmployeeSetPasswordView',
     'ReportsView', 'ReportsExportView',
     'SiteSettingsView',
+    'StockValueReportView',
     'CustomerListView', 'CustomerDetailView',
     'BannerListView', 'BannerCreateView', 'BannerUpdateView', 'BannerDeleteView',
     'CouponListView', 'CouponCreateView', 'CouponUpdateView', 'CouponDeleteView',

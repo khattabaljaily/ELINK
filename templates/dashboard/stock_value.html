@@ -1,0 +1,55 @@
+{% extends "dashboard/base.html" %}
+{% load price_tags %}
+
+{% block page_title %}Stock value{% endblock %}
+
+{% block content %}
+  <div class="dash-header">
+    <div>
+      <h1>Stock value</h1>
+      <p>Current inventory value, by category, based on stock on hand.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--accent">
+      <div class="kpi-card__label">Total stock value</div>
+      <div class="kpi-card__value">QAR {{ grand_total|qar }}</div>
+      <div class="kpi-card__meta">Across {{ category_groups|length }} categor{{ category_groups|length|pluralize:"y,ies" }}</div>
+    </div>
+  </div>
+
+  {% for group in category_groups %}
+    <div class="dash-card" style="margin-top:20px;">
+      <div class="dash-card__title" style="display:flex;justify-content:space-between;align-items:baseline;">
+        <span>{{ group.category.name }}</span>
+        <span>QAR {{ group.total|qar }}</span>
+      </div>
+      <div class="dash-table-wrap" style="border:none;padding:0;">
+        <table class="dash-table">
+          <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+          <tbody>
+            {% for item in group.items %}
+              <tr>
+                <td class="wrap">{{ item.label }}</td>
+                <td>{{ item.qty }}</td>
+                <td>QAR {{ item.price|qar }}</td>
+                <td>QAR {{ item.total|qar }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">Subtotal</td>
+              <td>QAR {{ group.total|qar }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  {% empty %}
+    <div class="dash-card" style="margin-top:20px;">
+      <p class="text-muted">No stock on hand.</p>
+    </div>
+  {% endfor %}
+{% endblock %}
