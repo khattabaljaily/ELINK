@@ -1,4 +1,8 @@
 {% load price_tags %}
+<div style="text-align:right;margin-bottom:12px;">
+  <a href="{% url 'dashboard:order_bill' order.pk %}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">View / print bill</a>
+</div>
+
 <div class="modal-order-items">
   <div class="dash-table-wrap" style="border:none;padding:0;">
     <table class="dash-table">
