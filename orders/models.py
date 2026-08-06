@@ -3,7 +3,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 
-from products.models import Variant
+from products.models import Product, Variant
 
 
 class Order(models.Model):
@@ -64,6 +64,12 @@ class OrderItem(models.Model):
     variant_label = models.CharField(max_length=100, blank=True)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+
+    # Snapshotted at checkout time (like product_name/unit_price above) so a
+    # later change to the product's condition or warranty never rewrites the
+    # terms printed on a bill that already went out to a customer.
+    condition = models.CharField(max_length=10, choices=Product.Condition.choices, default=Product.Condition.NEW)
+    warranty_days = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.quantity} x {self.product_name}'

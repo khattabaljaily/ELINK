@@ -12,7 +12,7 @@ from .employees import (
 )
 from .home import DashboardHomeView
 from .marketing import MarketingEmailView
-from .orders import OrderDeleteView, OrderDetailView, OrderListView
+from .orders import OrderBillView, OrderDeleteView, OrderDetailView, OrderListView
 from .products import ProductDeleteView, ProductFormView, ProductListView
 from .reports import ReportsExportView, ReportsView
 from .returns import ReturnRequestCreateView, ReturnRequestDetailView, ReturnRequestListView

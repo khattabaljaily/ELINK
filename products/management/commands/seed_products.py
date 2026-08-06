@@ -171,7 +171,7 @@ class Command(BaseCommand):
                         name=title,
                         description=SEED_MARKER,
                         price=price,
-                        warranty_months=random.choice([None, None, 6, 12, 24]),
+                        warranty_days=random.choice([None, None, 180, 365, 730]),
                         is_active=True,
                     )
 
@@ -217,7 +217,7 @@ class Command(BaseCommand):
                         name=name,
                         description=SEED_MARKER,
                         price=price,
-                        warranty_months=random.choice([None, None, 6, 12, 24]),
+                        warranty_days=random.choice([None, None, 180, 365, 730]),
                         is_active=True,
                     )
 

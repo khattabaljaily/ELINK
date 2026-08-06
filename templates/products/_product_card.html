@@ -7,8 +7,8 @@
       {% else %}
         <span class="product-card__placeholder">E LINK</span>
       {% endif %}
-      {% if not variant %}
-        <span class="product-card__ribbon">Out of stock</span>
+      {% if product.is_used %}
+        <span class="product-card__ribbon product-card__ribbon--used">Used</span>
       {% elif product.is_featured %}
         <span class="product-card__ribbon product-card__ribbon--featured">Bestseller</span>
       {% elif product.is_new %}
@@ -34,7 +34,9 @@
     {% endif %}
     <div class="product-card__body">
       {% if product.category %}
-        <span class="product-card__category">{{ product.category.name }}</span>
+        <div class="product-card__meta">
+          <span class="product-card__category">{{ product.category.name }}</span>
+        </div>
       {% endif %}
       <a href="{{ product.get_absolute_url }}" class="product-card__link">
         <span class="product-card__name">{{ product.name }}</span>

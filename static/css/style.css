@@ -1511,12 +1511,12 @@ textarea:focus {
 .product-card {
   position: relative;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(6, 40, 61, 0.07);
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 2px rgba(6, 40, 61, 0.04), 0 10px 24px -16px rgba(6, 40, 61, 0.12);
   transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color var(--transition);
   animation: fade-up 450ms ease both;
@@ -1614,9 +1614,9 @@ textarea:focus {
 }
 
 .product-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-6px);
-  border-color: var(--color-primary-light);
+  box-shadow: 0 28px 56px -20px rgba(6, 40, 61, 0.22), 0 6px 16px -6px rgba(15, 176, 126, 0.14);
+  transform: translateY(-6px) scale(1.008);
+  border-color: rgba(15, 176, 126, 0.3);
 }
 
 .product-card__image {
@@ -1655,6 +1655,7 @@ textarea:focus {
   top: 12px;
   right: 12px;
   z-index: 2;
+  overflow: hidden;
   background: var(--color-danger);
   color: var(--color-text-inverse);
   font-size: 0.64rem;
@@ -1676,12 +1677,36 @@ textarea:focus {
   color: var(--color-text-inverse);
 }
 
+.product-card__ribbon--used {
+  background: var(--gradient-accent);
+  color: var(--color-navy);
+}
+
+.product-card__ribbon--used::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: skewX(-20deg);
+  animation: badge-shine 2.6s ease-in-out infinite;
+}
+
 .product-card__body {
   padding: 16px 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1;
+}
+
+.product-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .product-card__category {
@@ -1692,6 +1717,51 @@ textarea:focus {
   letter-spacing: 0.06em;
   color: var(--color-primary-dark);
   opacity: 0.75;
+}
+
+.condition-badge {
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.condition-badge--used {
+  background: var(--gradient-accent);
+  color: var(--color-navy);
+  border: 1px solid rgba(217, 151, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(252, 181, 3, 0.45);
+}
+
+.condition-badge--new {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+  border: 1px solid rgba(10, 133, 99, 0.4);
+  box-shadow: 0 2px 8px rgba(15, 176, 126, 0.45);
+}
+
+.condition-badge--used::after,
+.condition-badge--new::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: skewX(-20deg);
+  animation: badge-shine 2.6s ease-in-out infinite;
+}
+
+@keyframes badge-shine {
+  0%, 15% { left: -60%; }
+  55%, 100% { left: 130%; }
 }
 
 .product-card__link {
@@ -1741,6 +1811,12 @@ textarea:focus {
   margin-top: 12px;
   padding: 11px 16px;
   font-size: 0.85rem;
+}
+
+.product-card__add:disabled {
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
+  opacity: 1;
 }
 
 .product-card__add svg {
@@ -1971,12 +2047,24 @@ textarea:focus {
   font-size: 2rem;
 }
 
+.product-detail__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .product-detail__category {
   color: var(--color-primary-dark);
   font-weight: 700;
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
+}
+
+.product-detail__meta .condition-badge {
+  font-size: 0.7rem;
+  padding: 4px 11px;
 }
 
 .product-detail__price {
@@ -2029,6 +2117,11 @@ textarea:focus {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+}
+
+.warranty-note--none {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
 }
 
 /* --------------------------------------------------------------------------
@@ -3147,5 +3240,203 @@ textarea:focus {
 
   .pwa-install-banner__btn {
     flex: 1;
+  }
+}
+
+/* Bill / printable invoice */
+
+.bill-page {
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  padding: 32px 20px 60px;
+}
+
+.bill-toolbar {
+  max-width: 780px;
+  margin: 0 auto 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bill-sheet {
+  max-width: 780px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 40px;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--color-navy);
+}
+
+.bill-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bill-header__logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.bill-header__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--color-navy);
+}
+
+.bill-header__tagline {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.bill-header__meta {
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.bill-header__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--color-navy);
+  margin-bottom: 4px;
+}
+
+.bill-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.bill-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary-dark);
+  margin-bottom: 6px;
+}
+
+.bill-value {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.87rem;
+}
+
+.bill-table th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 2px solid var(--color-navy);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.bill-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.bill-table th:nth-child(n+4),
+.bill-table td:nth-child(n+4) {
+  text-align: right;
+}
+
+.bill-totals {
+  margin: 20px 0 0;
+  margin-left: auto;
+  max-width: 280px;
+}
+
+.bill-totals__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.bill-totals__row--total {
+  border-top: 2px solid var(--color-navy);
+  margin-top: 6px;
+  padding-top: 12px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--color-navy);
+}
+
+.bill-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--color-border);
+  text-align: center;
+}
+
+.bill-footer__muted {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .bill-sheet {
+    padding: 24px 18px;
+  }
+
+  .bill-parties {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-header {
+    flex-direction: column;
+  }
+
+  .bill-header__meta {
+    text-align: left;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .bill-page {
+    background: #fff;
+    padding: 0;
+  }
+
+  .bill-sheet {
+    max-width: none;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
   }
 }

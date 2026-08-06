@@ -62,14 +62,20 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    class Condition(models.TextChoices):
+        NEW = 'new', 'New'
+        USED = 'used', 'Used'
+
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    warranty_months = models.PositiveIntegerField(
+    condition = models.CharField(max_length=10, choices=Condition.choices, default=Condition.NEW)
+    warranty_days = models.PositiveIntegerField(
         null=True, blank=True,
-        help_text="Warranty period in months. Leave blank if this product carries no warranty.",
+        help_text="Warranty period in days. Leave blank if this product carries no warranty. "
+                   "For used products, warranty is typically short (7-30 days).",
     )
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False, help_text="Show a 'Bestseller' badge on this product.")
@@ -97,6 +103,10 @@ class Product(models.Model):
     @property
     def is_new(self):
         return timezone.now() - self.created_at < timedelta(days=NEW_BADGE_DAYS)
+
+    @property
+    def is_used(self):
+        return self.condition == self.Condition.USED
 
     @property
     def total_stock(self):

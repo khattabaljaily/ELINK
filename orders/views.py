@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from cart.utils import get_cart
 from coupons.services import CouponError, calculate_discount, get_valid_coupon_for_cart, redeem_coupon_for_order
@@ -70,6 +71,8 @@ def checkout(request):
                             variant_label=' / '.join(p for p in (variant.size, variant.color) if p),
                             unit_price=variant.price,
                             quantity=item.quantity,
+                            condition=variant.product.condition,
+                            warranty_days=variant.product.warranty_days,
                         )
                         variant.stock -= item.quantity
                         variant.save(update_fields=['stock'])
@@ -138,6 +141,17 @@ def order_detail(request, token):
     return render(request, 'orders/detail.html', {
         'order': order,
         'open_return_request': open_return_request,
+    })
+
+
+def order_bill(request, token):
+    order = get_object_or_404(
+        Order.objects.select_related('user', 'payment').prefetch_related('items'), guest_token=token,
+    )
+    return render(request, 'orders/bill.html', {
+        'order': order,
+        'subtotal': sum((item.subtotal for item in order.items.all()), start=0),
+        'back_url': reverse('orders:detail', kwargs={'token': token}),
     })
 
 

@@ -36,10 +36,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('thumbnail', 'name', 'category', 'price', 'is_active', 'total_stock')
+    list_display = ('thumbnail', 'name', 'category', 'condition', 'price', 'is_active', 'total_stock')
     list_display_links = ('thumbnail', 'name')
     list_editable = ('price', 'is_active')
-    list_filter = ('category', 'is_active')
+    list_filter = ('category', 'condition', 'is_active')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline, VariantInline]
@@ -47,6 +47,7 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'category', 'description')}),
         ('Pricing & visibility', {'fields': ('price', 'is_active')}),
+        ('Condition & warranty', {'fields': ('condition', 'warranty_days')}),
     )
 
     def thumbnail(self, obj):

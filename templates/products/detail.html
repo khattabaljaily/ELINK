@@ -60,7 +60,10 @@
       </div>
 
       <div class="product-detail__info">
-        <span class="product-detail__category">{{ product.category.name }}</span>
+        <div class="product-detail__meta">
+          <span class="product-detail__category">{{ product.category.name }}</span>
+          <span class="condition-badge condition-badge--{{ product.condition }}">{{ product.get_condition_display }}</span>
+        </div>
         <h1>{{ product.name }}</h1>
         {% if rating_summary.count %}
           <a href="#reviews" class="product-detail__rating" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:inherit;margin-bottom:8px;">
@@ -113,10 +116,15 @@
           <p class="text-muted">This product is currently unavailable.</p>
         {% endif %}
 
-        {% if product.warranty_months %}
+        {% if product.warranty_days %}
           <p class="warranty-note">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
-            Includes {{ product.warranty_months }} month{{ product.warranty_months|pluralize }} warranty
+            Includes {{ product.warranty_days }} day{{ product.warranty_days|pluralize }} warranty{% if product.is_used %} (used item){% endif %}
+          </p>
+        {% elif product.is_used %}
+          <p class="warranty-note warranty-note--none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+            Sold as used — no manufacturer warranty
           </p>
         {% endif %}
       </div>

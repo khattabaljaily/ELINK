@@ -70,6 +70,18 @@ class OrderDetailView(StaffRequiredMixin, View):
         return redirect('dashboard:order_detail', pk=pk)
 
 
+class OrderBillView(StaffRequiredMixin, View):
+    def get(self, request, pk):
+        order = get_object_or_404(
+            Order.objects.select_related('user', 'payment').prefetch_related('items'), pk=pk,
+        )
+        return render(request, 'orders/bill.html', {
+            'order': order,
+            'subtotal': sum((item.subtotal for item in order.items.all()), start=0),
+            'back_url': reverse_lazy('dashboard:order_detail', kwargs={'pk': pk}),
+        })
+
+
 class OrderDeleteView(AjaxDeleteMixin, SuperuserRequiredMixin, DeleteView):
     model = Order
     template_name = 'dashboard/confirm_delete.html'

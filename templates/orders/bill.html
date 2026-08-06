@@ -1,0 +1,103 @@
+{% load static %}
+{% load asset_tags %}
+{% load price_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill · Order #{{ order.id }} · E LINK</title>
+  <link rel="icon" href="{% static 'img/logo/765824.png' %}">
+  <link rel="stylesheet" href="{% static_versioned 'css/style.css' %}">
+</head>
+<body class="bill-page">
+  <div class="bill-toolbar no-print">
+    <a href="{{ back_url }}" class="btn btn-outline btn-sm">&larr; Back</a>
+    <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <div class="bill-sheet">
+    <div class="bill-header">
+      <div class="bill-header__brand">
+        <img src="{% static 'img/logo/765824.png' %}" alt="E LINK" class="bill-header__logo">
+        <div>
+          <div class="bill-header__name">E LINK</div>
+          <div class="bill-header__tagline">Everything you need, one link away</div>
+        </div>
+      </div>
+      <div class="bill-header__meta">
+        <div class="bill-header__title">Bill / Invoice</div>
+        <div>Order #{{ order.id }}</div>
+        <div>{{ order.created_at|date:"d M Y, H:i" }}</div>
+      </div>
+    </div>
+
+    <div class="bill-parties">
+      <div>
+        <div class="bill-label">Billed to</div>
+        <div class="bill-value">
+          {{ order.full_name }}<br>
+          {{ order.address }}, {{ order.city }}<br>
+          {{ order.phone }}<br>
+          {{ order.email }}
+        </div>
+      </div>
+      <div>
+        <div class="bill-label">Payment &amp; status</div>
+        <div class="bill-value">
+          {% if order.payment %}{{ order.payment.gateway|upper }} &middot; {{ order.payment.get_status_display }}{% else %}Not recorded{% endif %}<br>
+          Order status: {{ order.get_status_display }}
+          {% if order.tracking_number %}<br>Tracking: {{ order.tracking_number }}{% if order.tracking_carrier %} via {{ order.tracking_carrier }}{% endif %}{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <table class="bill-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Condition</th>
+          <th>Warranty</th>
+          <th>Qty</th>
+          <th>Unit price</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+          <tr>
+            <td>{{ item.product_name }}{% if item.variant_label %} <span class="text-muted">({{ item.variant_label }})</span>{% endif %}</td>
+            <td>{{ item.get_condition_display }}</td>
+            <td>{% if item.warranty_days %}{{ item.warranty_days }} day{{ item.warranty_days|pluralize }}{% else %}&mdash;{% endif %}</td>
+            <td>{{ item.quantity }}</td>
+            <td>QAR {{ item.unit_price|qar }}</td>
+            <td>QAR {{ item.subtotal|qar }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="bill-totals">
+      {% if order.discount_total %}
+        <div class="bill-totals__row">
+          <span>Subtotal</span>
+          <span>QAR {{ subtotal|qar }}</span>
+        </div>
+        <div class="bill-totals__row">
+          <span>Discount{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}</span>
+          <span>&minus;QAR {{ order.discount_total|qar }}</span>
+        </div>
+      {% endif %}
+      <div class="bill-totals__row bill-totals__row--total">
+        <span>Total</span>
+        <span>QAR {{ order.total|qar }}</span>
+      </div>
+    </div>
+
+    <div class="bill-footer">
+      <p>Thank you for shopping with E LINK.</p>
+      <p class="bill-footer__muted">This bill can be reprinted anytime from your order page. Printed {% now "d M Y, H:i" %}.</p>
+    </div>
+  </div>
+</body>
+</html>

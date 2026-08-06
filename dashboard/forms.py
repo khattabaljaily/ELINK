@@ -18,7 +18,7 @@ User = get_user_model()
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ('name', 'category', 'description', 'price', 'warranty_months', 'is_active', 'is_featured')
+        fields = ('name', 'category', 'description', 'price', 'condition', 'warranty_days', 'is_active', 'is_featured')
         widgets = {'description': forms.Textarea(attrs={'rows': 4})}
 
     def clean_name(self):
